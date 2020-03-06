@@ -1,4 +1,6 @@
 package com.csci448.RealTime.FinalProject.ui.login
 
-class LoginViewModel {
+import androidx.lifecycle.ViewModel
+
+class LoginViewModel: ViewModel() {
 }

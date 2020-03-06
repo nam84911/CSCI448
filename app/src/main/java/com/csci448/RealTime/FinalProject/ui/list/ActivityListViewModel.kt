@@ -5,10 +5,9 @@ import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.ActivityRepository
 
 class ActivityListViewModel (private val activityRepository: ActivityRepository) : ViewModel(){
-    // TODO: figure out how to get Activities
-//    val activityListLiveData = ActivityRepository.getActivities()
+   val activityListLiveData = activityRepository.getActivities()
 
     fun addActivity(activity : Activity){
-//  TODO: Add activity using ActivityRepository
+        activityRepository.addActivity(activity)
     }
 }

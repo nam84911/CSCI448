@@ -6,8 +6,10 @@ import java.util.concurrent.Executors
 
 class ActivityRepository(private val activityDao: ActivityDao) {
     private val executor= Executors.newSingleThreadExecutor()
-
-    fun addCrime(activity:Activity){
+    fun getActivities():LiveData<List<Activity>>{
+        return activityDao.getActivities()
+    }
+    fun addActivity(activity:Activity){
         executor.execute{
             activityDao.addActivity(activity)
         }
