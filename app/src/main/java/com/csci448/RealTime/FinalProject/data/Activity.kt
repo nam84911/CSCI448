@@ -4,12 +4,13 @@ import android.location.Address
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.sql.Time
+import java.time.LocalTime
 import java.util.*
 
 @Entity
-class Activity(@PrimaryKey private val uuid: UUID,
-               private val day:Day,
-               private val time: Time,
-               private val activity:String,
-               private val address:Address) {
+data class Activity(@PrimaryKey  val uuid: UUID=UUID.randomUUID(),
+                var day:String=Day.FRI.c,
+                var time: Date =Date(),
+                var activity:String="",
+                var address:String="") {
 }
