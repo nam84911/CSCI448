@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.csci448.RealTime.FinalProject.R
+import kotlinx.android.synthetic.main.activity_list.view.*
 
 
 private val logTag = "RealTime.ActListFrag"
@@ -31,8 +33,9 @@ class ActivityListFragment : Fragment() {
     ): View? {
 
         Log.d(logTag, "onCreateView() called")
+        val view=inflater.inflate(R.laupit.activity_list,container,false)
+        return view
 
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
