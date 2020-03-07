@@ -123,7 +123,6 @@
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="10dp"
         android:background="#00FFFFFF"
-        android:enabled="false"
         android:text="@string/forgot_password_button"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/colorAccent_white"

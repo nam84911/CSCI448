@@ -19,7 +19,7 @@ class ActivityAdapter (private val activities: List<Activity>, private val click
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivityHolder {
         // Need xml files to name this.
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.ss,parent, false)
+            .inflate(R.layout.day_item,parent, false)
         return ActivityHolder(view)    }
 
 }

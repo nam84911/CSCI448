@@ -1,7 +1,7 @@
 package com.csci448.RealTime.FinalProject.data
 
 enum class Day(val c:String) {
-    MON("MOnday"),
+    MON("Monday"),
     TUE("Tuesday"),
     WED("Wednesday"),
     THU("Thursday"),
