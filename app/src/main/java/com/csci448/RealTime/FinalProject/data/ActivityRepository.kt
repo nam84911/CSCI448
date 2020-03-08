@@ -9,6 +9,27 @@ class ActivityRepository(private val activityDao: ActivityDao) {
     fun getActivities():LiveData<List<Activity>>{
         return activityDao.getActivities()
     }
+    fun getMondayActivities():LiveData<List<Activity>>{
+        return activityDao.getMondayActivities()
+    }
+    fun getTuesdayActivities():LiveData<List<Activity>>{
+        return activityDao.getTuesdayActivities()
+    }
+    fun getWednesdayActivities():LiveData<List<Activity>>{
+        return activityDao.getWednesdayActivities()
+    }
+    fun getThursdayyActivities():LiveData<List<Activity>>{
+        return activityDao.getThursdayActivities()
+    }
+    fun getFridayActivities():LiveData<List<Activity>>{
+        return activityDao.getFridayActivities()
+    }
+    fun getSaturdaydayActivities():LiveData<List<Activity>>{
+        return activityDao.getSaturdayActivities()
+    }
+    fun getSundayAxtivity():LiveData<List<Activity>>{
+        return activityDao.getSundayActivities()
+    }
     fun addActivity(activity:Activity){
         executor.execute{
             activityDao.addActivity(activity)

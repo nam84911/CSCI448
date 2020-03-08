@@ -1,5 +1,6 @@
 package com.csci448.RealTime.FinalProject.data
 
+import android.location.Address
 import androidx.room.TypeConverter
 import java.sql.Time
 import java.util.*
@@ -7,13 +8,13 @@ import java.util.*
 
 class ActivityTypeConverters {
     @TypeConverter
-    fun fromTime(date: Time?):Long?{
+    fun frimDate(date: Date?):Long?{
         return date?.time
     }
     @TypeConverter
-    fun toDate(m:Long?):Time?{
+    fun toDate(m:Long?):Date?{
         return m?.let{
-            Time(it)
+            Date(it)
         }
     }
     @TypeConverter
