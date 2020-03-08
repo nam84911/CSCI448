@@ -21,7 +21,6 @@ class WeekHolder(view: View): RecyclerView.ViewHolder(view) {
             number_activities.text=week.number.toString()
 
         }
-        //Add listener
         itemView.setOnClickListener{
             clickListener(this.week)
         }
