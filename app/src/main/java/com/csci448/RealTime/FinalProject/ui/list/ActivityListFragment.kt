@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.csci448.RealTime.FinalProject.R
@@ -16,7 +14,6 @@ import com.csci448.RealTime.FinalProject.ui.list_week.WeekListViewModel
 private val logTag = "RealTime.ActListFrag"
 
 class ActivityListFragment : Fragment() {
-
     private lateinit var activityViewModel: ActivityListViewModel
 
 
@@ -30,7 +27,6 @@ class ActivityListFragment : Fragment() {
         Log.d(logTag, "onCreate() called")
         val factory = ActivityListViewModelFactory(requireContext())
         activityViewModel= ViewModelProvider(this,factory).get(ActivityListViewModel::class.java)
-
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +43,6 @@ class ActivityListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(logTag, "onViewCreated() called")
     }
-
 
     override fun onStart() {
         super.onStart()

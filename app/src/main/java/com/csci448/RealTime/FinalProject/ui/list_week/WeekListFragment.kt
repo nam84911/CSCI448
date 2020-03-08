@@ -1,10 +1,9 @@
 package com.csci448.RealTime.FinalProject.ui.list_week
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +14,10 @@ import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.data.Week
 
 class WeekListFragment: Fragment() {
+    interface Callbacks{
+        fun goToAddScreen()
+    }
+    private var callbacks:Callbacks?=null
     private lateinit var weekListViewModel:WeekListViewModel
     private lateinit var adapter: WeekAdapter
     private lateinit var weekRecyclerView: RecyclerView
@@ -40,6 +43,7 @@ class WeekListFragment: Fragment() {
         super.onCreate(savedInstanceState)
         val factory = WeekListViewModelFactory(requireContext())
         weekListViewModel= ViewModelProvider(this,factory).get(WeekListViewModel::class.java)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -63,5 +67,29 @@ class WeekListFragment: Fragment() {
                 updateUI()
             }
         )
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.list_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.add_activity->{
+                callbacks?.goToAddScreen()
+                true
+            }
+            else-> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks=context as Callbacks
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks=null
     }
 }
