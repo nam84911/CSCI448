@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import com.csci448.RealTime.FinalProject.data.Activity
 import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.csci448.RealTime.FinalProject.data.Day
 
 
 private val logTag = "RealTime.ActListFrag"
@@ -22,15 +24,21 @@ class ActivityListFragment : Fragment() {
     private lateinit var adapter: ActivityAdapter
     private lateinit var dayRecyclerView: RecyclerView
     private lateinit var activities: List<Activity>
+    private lateinit var dayTextView : TextView
+    private lateinit var day: Day
 
 
-//    companion object{
-////        fun newInstance(day : Day){
-////            val args = Bundle.apply{
-////
-////            }
-////        }
-//    }
+    companion object{
+        fun newInstance(day : Day):ActivityListFragment{
+//            val args = Bundle().apply{
+//
+//            }
+            return ActivityListFragment().apply {
+//                arguments = args
+                this.day = day
+            }
+        }
+    }
 
     interface Callbacks{
         fun onDaySelected(activity : Activity)
@@ -47,6 +55,7 @@ class ActivityListFragment : Fragment() {
                 .show()
         }
         dayRecyclerView.adapter = adapter
+        dayTextView.setText(day.toString())
 
     }
 
@@ -68,6 +77,7 @@ class ActivityListFragment : Fragment() {
         val view=inflater.inflate(R.layout.activity_day,container,false)
         dayRecyclerView = view.findViewById(R.id.day_recycler_view)
         dayRecyclerView.layoutManager = LinearLayoutManager(context)
+        dayTextView = view.findViewById(R.id.day_textView)
 //        updateUI(activities)
         return view
 
@@ -75,7 +85,18 @@ class ActivityListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(logTag, "onViewCreated() called")
-        activityViewModel.activityListLiveData.observe(
+        var data = activityViewModel.activityListLiveData
+        when (this.day) {
+            Day.SUN -> data = activityViewModel.activityListLiveData_Sunday
+            Day.MON -> data = activityViewModel.activityListLiveData_Monday
+            Day.TUE -> data = activityViewModel.activityListLiveData_Tuesday
+            Day.WED -> data = activityViewModel.activityListLiveData_Wednesday
+            Day.THU -> data = activityViewModel.activityListLiveData_Thursday
+            Day.FRI -> data = activityViewModel.activityListLiveData_Friday
+            Day.SAT -> data = activityViewModel.activityListLiveData_Saturday
+            else -> data = activityViewModel.activityListLiveData
+        }
+        data.observe(
             viewLifecycleOwner,
             Observer{ activities ->
                 activities?.let{

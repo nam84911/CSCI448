@@ -38,8 +38,6 @@ class WeekListFragment: Fragment() {
     private fun updateUI() {
         adapter = WeekAdapter(makeWeek()) {activity: Week ->
             Unit
-                Toast.makeText(context, "${activity.day} pressed", Toast.LENGTH_SHORT)
-                .show()
             callbacks?.daySelected(activity.day)
         }
         weekRecyclerView.adapter = adapter

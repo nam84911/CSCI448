@@ -38,8 +38,7 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
     }
 
     override fun daySelected(day: Day) {
-        // TODO: Need to pass the day to this fragment
-        val fragment = ActivityListFragment()
+        val fragment = ActivityListFragment.newInstance(day)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
     }
 
