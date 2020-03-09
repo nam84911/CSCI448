@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.csci448.RealTime.FinalProject.R
 
 class ActivityDetailFragment : Fragment(){
@@ -15,8 +16,12 @@ class ActivityDetailFragment : Fragment(){
    }
     private var callbacks:Callbacks?=null
     private lateinit var pcikTimebutton:Button
+    private lateinit var createActivityButton:Button
+    private lateinit var activityDetailViewModel:ActivityDetailViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val factory = ActivityDetailViewModelFactory(requireContext())
+        activityDetailViewModel= ViewModelProvider(this,factory).get(ActivityDetailViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -28,6 +33,11 @@ class ActivityDetailFragment : Fragment(){
         pcikTimebutton=view.findViewById(R.id.pick_time)
         pcikTimebutton.setOnClickListener{
             callbacks?.showTimeScreen()
+        }
+        createActivityButton=view.findViewById(R.id.create_activity)
+        createActivityButton.setOnClickListener{
+            activityDetailViewModel.addActivity()
+
         }
             return view
 

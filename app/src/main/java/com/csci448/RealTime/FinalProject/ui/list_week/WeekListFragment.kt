@@ -26,11 +26,11 @@ class WeekListFragment: Fragment() {
 
     private fun makeWeek():List<Week>{
         val list = mutableListOf<Week>()
-        list.add(Week(Day.MON,weekListViewModel.mondayActivityListLiveData.value?.size))
+        list.add(Week(Day.MON,weekListViewModel.mondayActivityListLiveData.getValue()?.size))
         list.add(Week(Day.TUE,weekListViewModel.tuesdayActivityListLiveData.value?.size))
         list.add(Week(Day.WED,weekListViewModel.wednesdayActivityListLiveData.value?.size))
         list.add(Week(Day.THU,weekListViewModel.thursdayActivityListLiveData.value?.size))
-        list.add(Week(Day.FRI,weekListViewModel.fridayActivityListLiveData.value?.size))
+        list.add(Week(Day.FRI,weekListViewModel.fridayActivityListLiveData.getValue()?.size))
         list.add(Week(Day.SAT,weekListViewModel.saturdayActivityListLiveData.value?.size))
         list.add(Week(Day.SUN,weekListViewModel.sundayActivityListLiveData.value?.size))
         return list
@@ -63,9 +63,18 @@ class WeekListFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        weekListViewModel.activityListliveData.observe(
+        weekListViewModel.mondayActivityListLiveData.observe(
             viewLifecycleOwner,
             Observer { activities->activities?.let{
+                updateUI()
+            }
+                updateUI()
+            }
+        )
+        weekListViewModel.fridayActivityListLiveData.observe(
+            viewLifecycleOwner,
+            Observer { activities->activities?.let{
+                updateUI()
             }
                 updateUI()
             }

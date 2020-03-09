@@ -24,5 +24,10 @@ class ActivityHolder (val view: View) : RecyclerView.ViewHolder(view) {
         activity_time = itemView.findViewById(R.id.time)
         activity_location = itemView.findViewById(R.id.address)
 
+        //For testing only
+        activity_name.text="Walk my dog"
+        activity_time.text="10:00 AM"
+        activity_location.text="1211 Alarm street"
+
     }
 }

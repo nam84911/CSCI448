@@ -18,7 +18,7 @@ interface ActivityDao {
 
     @Query("SELECT * FROM activity WHERE day='Thursday'")
     fun getThursdayActivities() :LiveData<List<Activity>>
-    @Query("SELECT * FROM activity WHERE day='Friday'")
+    @Query("SELECT * FROM activity WHERE Day='Friday'")
     fun getFridayActivities() :LiveData<List<Activity>>
     @Query("SELECT * FROM activity WHERE day='Saturday'")
     fun getSaturdayActivities() :LiveData<List<Activity>>

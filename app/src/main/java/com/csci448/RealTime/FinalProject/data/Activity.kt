@@ -11,6 +11,6 @@ import java.util.*
 data class Activity(@PrimaryKey  val uuid: UUID=UUID.randomUUID(),
                 var day:String=Day.FRI.c,
                 var time: Date =Date(),
-                var activity:String="",
-                var address:String="") {
+                var activity:String="Make a car",
+                var address:String="1234 monday street, 90123, wa") {
 }
