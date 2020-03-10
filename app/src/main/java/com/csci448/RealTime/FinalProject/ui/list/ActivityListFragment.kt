@@ -4,8 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +18,7 @@ import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.csci448.RealTime.FinalProject.data.Day
+import kotlinx.android.synthetic.main.activity_day.*
 
 
 private val logTag = "RealTime.ActListFrag"
@@ -26,6 +30,9 @@ class ActivityListFragment : Fragment() {
     private lateinit var activities: List<Activity>
     private lateinit var dayTextView : TextView
     private lateinit var day: Day
+
+    private lateinit var settingsButton : Button
+    private lateinit var addActivityButton : AppCompatImageButton
 
 
     companion object{
@@ -51,7 +58,7 @@ class ActivityListFragment : Fragment() {
     private fun updateUI(activities : List<Activity>){
         adapter = ActivityAdapter(activities){activity : Activity
             -> Unit
-            Toast.makeText(context, "${activity.activity} pressed", Toast.LENGTH_SHORT)
+            Toast.makeText(context, "Activity Pressed. Should go to filled in activity detail.", Toast.LENGTH_SHORT)
                 .show()
         }
         dayRecyclerView.adapter = adapter
@@ -78,6 +85,17 @@ class ActivityListFragment : Fragment() {
         dayRecyclerView = view.findViewById(R.id.day_recycler_view)
         dayRecyclerView.layoutManager = LinearLayoutManager(context)
         dayTextView = view.findViewById(R.id.day_textView)
+
+        settingsButton = view.findViewById(R.id.settings_button)
+        addActivityButton = view.findViewById(R.id.add_button)
+
+        settingsButton.setOnClickListener {
+            val toast = Toast.makeText(context,"Settings Button Pressed",Toast.LENGTH_SHORT)
+            toast.show()
+        }
+        addActivityButton.setOnClickListener {
+            callbacks?.goToAddScreen()
+        }
 //        updateUI(activities)
         return view
 

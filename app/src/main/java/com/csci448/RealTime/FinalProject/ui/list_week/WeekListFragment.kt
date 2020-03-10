@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,6 +24,7 @@ class WeekListFragment: Fragment() {
     private lateinit var weekListViewModel:WeekListViewModel
     private lateinit var adapter: WeekAdapter
     private lateinit var weekRecyclerView: RecyclerView
+    private lateinit var settingsButton : Button
 
     private fun makeWeek():List<Week>{
         val list = mutableListOf<Week>()
@@ -57,6 +59,11 @@ class WeekListFragment: Fragment() {
         val view=inflater.inflate(R.layout.activity_week,container,false)
         weekRecyclerView=view.findViewById(R.id.week_recycler_view)
         weekRecyclerView.layoutManager= LinearLayoutManager(context)
+        settingsButton = view.findViewById(R.id.settings_button)
+        settingsButton.setOnClickListener {
+            Toast.makeText(context, "Settings Button Pressed", Toast.LENGTH_SHORT)
+                .show()
+        }
         updateUI()
         return view
     }
