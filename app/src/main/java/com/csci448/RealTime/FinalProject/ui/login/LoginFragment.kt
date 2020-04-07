@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.csci448.RealTime.FinalProject.R
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment:Fragment() {
     interface Callbacks{
@@ -16,6 +17,12 @@ class LoginFragment:Fragment() {
     private var callBacks:Callbacks?=null
 
     private lateinit var signIn:Button
+    private lateinit var auth: FirebaseAuth
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        //Initialize auth for firebase
+        auth = FirebaseAuth.getInstance()
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
