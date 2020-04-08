@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.csci448.RealTime.FinalProject.R
+import com.csci448.RealTime.FinalProject.util.CurrentUser
 import com.google.firebase.auth.FirebaseAuth
 
 public const val TAG="com.csci448.realtime"
@@ -29,6 +30,9 @@ class LoginFragment:Fragment() {
         super.onCreate(savedInstanceState)
         //Initialize auth for firebase
         auth = FirebaseAuth.getInstance()
+        if(CurrentUser.getCurrentUser()!=null){
+            callBacks?.goToAlarm()
+        }
     }
     override fun onCreateView(
         inflater: LayoutInflater,
