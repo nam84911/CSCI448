@@ -18,7 +18,7 @@ import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.csci448.RealTime.FinalProject.data.Day
-import kotlinx.android.synthetic.main.activity_day.*
+import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil
 
 
 private val logTag = "RealTime.ActListFrag"
@@ -50,6 +50,7 @@ class ActivityListFragment : Fragment() {
     interface Callbacks{
         fun onDaySelected(activity : Activity)
         fun goToAddScreen()
+        fun goToSignIn()
     }
 
     private var callbacks: Callbacks? = null
@@ -132,7 +133,14 @@ class ActivityListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(logTag, "onResume() called")
+        // Check internet connectivity
+        if (!NetworkConnectionUtil.isNetworkAvailableAndConnected(requireActivity())){
+//            val toast = Toast.makeText(context,"Please connect to the internet and try again", Toast.LENGTH_SHORT)
+//            toast.show()
+            callbacks?.goToSignIn()
+        } else {
+
+        }
     }
 
     override fun onPause() {

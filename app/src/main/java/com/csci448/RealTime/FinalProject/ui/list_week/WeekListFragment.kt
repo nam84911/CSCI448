@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.data.Week
+import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil
 
 class WeekListFragment: Fragment() {
     interface Callbacks{
         fun goToAddScreen()
         fun daySelected(day: Day)
+        fun goToSignIn()
     }
     private var callbacks:Callbacks?=null
     private lateinit var weekListViewModel:WeekListViewModel
@@ -110,5 +112,17 @@ class WeekListFragment: Fragment() {
     override fun onDetach() {
         super.onDetach()
         callbacks=null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Check internet connectivity
+        if (!NetworkConnectionUtil.isNetworkAvailableAndConnected(requireActivity())){
+//            val toast = Toast.makeText(context,"Please connect to the internet and try again", Toast.LENGTH_SHORT)
+//            toast.show()
+            callbacks?.goToSignIn()
+        } else {
+
+        }
     }
 }

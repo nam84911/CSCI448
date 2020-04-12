@@ -6,6 +6,7 @@ import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
 import com.csci448.RealTime.FinalProject.ui.detail.ActivityDetailFragment
+import com.csci448.RealTime.FinalProject.ui.detail.MapSelectionFragment
 import com.csci448.RealTime.FinalProject.ui.list.ActivityListFragment
 import com.csci448.RealTime.FinalProject.ui.list_week.WeekListFragment
 import com.csci448.RealTime.FinalProject.ui.login.LoginFragment
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
             val fragment = LoginFragment()
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
         }
+
     }
 
     override fun goToAlarm() {
@@ -44,5 +46,15 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
 
     override fun onDaySelected(activity: Activity) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun goToSignIn(){
+        val fragment = LoginFragment()
+        supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
+    }
+
+    override fun goToMap() {
+        val fragment = MapSelectionFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
     }
 }

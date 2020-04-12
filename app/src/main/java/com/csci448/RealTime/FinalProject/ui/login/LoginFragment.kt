@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.csci448.RealTime.FinalProject.R
+import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil.isNetworkAvailableAndConnected
 
 class LoginFragment:Fragment() {
     interface Callbacks{
@@ -37,5 +39,19 @@ class LoginFragment:Fragment() {
     override fun onDetach() {
         super.onDetach()
         callBacks=null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Check internet connectivity
+        if (!isNetworkAvailableAndConnected(requireActivity())){
+            val toast = Toast.makeText(context,"Please connect to the internet and try again", Toast.LENGTH_SHORT)
+            toast.show()
+            signIn.isEnabled = false
+            signIn.text = "No Connection"
+        } else {
+            signIn.isEnabled = true
+            signIn.text = "Sign in"
+        }
     }
 }

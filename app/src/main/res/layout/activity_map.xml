@@ -38,12 +38,12 @@
     </LinearLayout>
 
 
-    <EditText
-        android:id="@+id/locationAddress_textView"
+    <Button
+        android:id="@+id/locationAddress_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Search address"
+        android:text="Search address"
         android:inputType="textPostalAddress"
         android:padding="20dp" />
 
