@@ -19,22 +19,30 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil
+import com.csci448.RealTime.FinalProject.ui.detail.TAG
+import com.csci448.RealTime.FinalProject.util.CurrentUser
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_day.*
 
 
 private val logTag = "RealTime.ActListFrag"
 
 class ActivityListFragment : Fragment() {
+    private lateinit var database: DatabaseReference
     private lateinit var activityViewModel: ActivityListViewModel
     private lateinit var adapter: ActivityAdapter
     private lateinit var dayRecyclerView: RecyclerView
-    private lateinit var activities: List<Activity>
+    private val activities= mutableListOf<Activity>()
     private lateinit var dayTextView : TextView
-    private lateinit var day: Day
+    private lateinit  var day: Day
 
     private lateinit var settingsButton : Button
     private lateinit var addActivityButton : AppCompatImageButton
-
-
     companion object{
         fun newInstance(day : Day):ActivityListFragment{
 //            val args = Bundle().apply{
@@ -64,7 +72,6 @@ class ActivityListFragment : Fragment() {
         }
         dayRecyclerView.adapter = adapter
         dayTextView.setText(day.toString())
-
     }
 
     // ================================= Overriden functions ==========================================================
@@ -74,6 +81,7 @@ class ActivityListFragment : Fragment() {
         val factory = ActivityListViewModelFactory(requireContext())
         activityViewModel= ViewModelProvider(this,factory).get(ActivityListViewModel::class.java)
         setHasOptionsMenu(true)
+        database = Firebase.database.reference
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,33 +105,49 @@ class ActivityListFragment : Fragment() {
         addActivityButton.setOnClickListener {
             callbacks?.goToAddScreen()
         }
-//        updateUI(activities)
+       updateUI(emptyList())
+        activities.clear()
         return view
 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(logTag, "onViewCreated() called")
-        var data = activityViewModel.activityListLiveData
-        when (this.day) {
-            Day.SUN -> data = activityViewModel.activityListLiveData_Sunday
-            Day.MON -> data = activityViewModel.activityListLiveData_Monday
-            Day.TUE -> data = activityViewModel.activityListLiveData_Tuesday
-            Day.WED -> data = activityViewModel.activityListLiveData_Wednesday
-            Day.THU -> data = activityViewModel.activityListLiveData_Thursday
-            Day.FRI -> data = activityViewModel.activityListLiveData_Friday
-            Day.SAT -> data = activityViewModel.activityListLiveData_Saturday
-            else -> data = activityViewModel.activityListLiveData
-        }
-        data.observe(
-            viewLifecycleOwner,
-            Observer{ activities ->
-                activities?.let{
-                    this.activities = activities
-                    updateUI(activities)
-                }
+        val list=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString()).child(day.c)
+        val childEventListener = object: ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
-        )
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                // A new comment has been added, add it to the displayed list
+                var s=""
+                for (i in dataSnapshot.children){
+                    s=s+','+i.getValue().toString()
+                }
+                s=s.removeRange(0,1)
+                Log.d(TAG,s)
+                val(activity,address,hr,min,uuid)=s.split(',')
+                activities.add(Activity(address=address
+                    ,min=min.toInt(),
+                    activity = activity,
+                    hr=hr.toInt(),uuid=uuid))
+                updateUI(activities)
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
+        list.addChildEventListener(childEventListener)
     }
 
     override fun onStart() {

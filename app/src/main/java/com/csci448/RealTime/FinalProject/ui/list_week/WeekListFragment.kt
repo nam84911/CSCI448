@@ -3,6 +3,7 @@ package com.csci448.RealTime.FinalProject.ui.list_week
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.Toast
@@ -15,6 +16,14 @@ import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.data.Week
 import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil
+import com.csci448.RealTime.FinalProject.ui.detail.TAG
+import com.csci448.RealTime.FinalProject.util.CurrentUser
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class WeekListFragment: Fragment() {
     interface Callbacks{
@@ -27,20 +36,14 @@ class WeekListFragment: Fragment() {
     private lateinit var adapter: WeekAdapter
     private lateinit var weekRecyclerView: RecyclerView
     private lateinit var settingsButton : Button
+    private lateinit var database: DatabaseReference
 
     private fun makeWeek():List<Week>{
         val list = mutableListOf<Week>()
-        list.add(Week(Day.MON,weekListViewModel.mondayActivityListLiveData.getValue()?.size))
-        list.add(Week(Day.TUE,weekListViewModel.tuesdayActivityListLiveData.value?.size))
-        list.add(Week(Day.WED,weekListViewModel.wednesdayActivityListLiveData.value?.size))
-        list.add(Week(Day.THU,weekListViewModel.thursdayActivityListLiveData.value?.size))
-        list.add(Week(Day.FRI,weekListViewModel.fridayActivityListLiveData.getValue()?.size))
-        list.add(Week(Day.SAT,weekListViewModel.saturdayActivityListLiveData.value?.size))
-        list.add(Week(Day.SUN,weekListViewModel.sundayActivityListLiveData.value?.size))
         return list
     }
     private fun updateUI() {
-        adapter = WeekAdapter(makeWeek()) {activity: Week ->
+        adapter = WeekAdapter(weekListViewModel.getList()) {activity: Week ->
             Unit
             callbacks?.daySelected(activity.day)
         }
@@ -51,6 +54,8 @@ class WeekListFragment: Fragment() {
         val factory = WeekListViewModelFactory(requireContext())
         weekListViewModel= ViewModelProvider(this,factory).get(WeekListViewModel::class.java)
         setHasOptionsMenu(true)
+        weekListViewModel.initializeWeeks()
+        database = Firebase.database.reference
     }
 
     override fun onCreateView(
@@ -72,22 +77,29 @@ class WeekListFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        weekListViewModel.mondayActivityListLiveData.observe(
-            viewLifecycleOwner,
-            Observer { activities->activities?.let{
+        val databasereference=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString())
+        val childEventListener = object: ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                // A new comment has been added, add it to the displayed list
+               Log.d("csci448",dataSnapshot.childrenCount.toString())
+                weekListViewModel.setDay(dataSnapshot.key,dataSnapshot.childrenCount)
                 updateUI()
             }
-                updateUI()
+
+            override fun onChildRemoved(p0: DataSnapshot) {
             }
-        )
-        weekListViewModel.fridayActivityListLiveData.observe(
-            viewLifecycleOwner,
-            Observer { activities->activities?.let{
-                updateUI()
-            }
-                updateUI()
-            }
-        )
+        }
+        databasereference.addChildEventListener(childEventListener)
+
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
