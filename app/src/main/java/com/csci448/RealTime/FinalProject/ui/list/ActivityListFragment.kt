@@ -69,6 +69,7 @@ class ActivityListFragment : Fragment() {
             -> Unit
             Toast.makeText(context, "Activity Pressed. Should go to filled in activity detail.", Toast.LENGTH_SHORT)
                 .show()
+            // TODO make a callback here to open up an Activity Detail Fragment
         }
         dayRecyclerView.adapter = adapter
         dayTextView.setText(day.toString())
