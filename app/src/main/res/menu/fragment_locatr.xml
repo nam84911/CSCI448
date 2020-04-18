@@ -6,5 +6,9 @@
         android:title="Get Location"
         android:icon="@drawable/ic_menu_location"
         app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/save_location"
+        android:title="@string/map_save"
+        app:showAsAction="always"/>
 
 </menu>

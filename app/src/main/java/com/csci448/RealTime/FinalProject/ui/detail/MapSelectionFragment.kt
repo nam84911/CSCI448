@@ -14,7 +14,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.csci448.RealTime.FinalProject.R
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -24,9 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import java.io.IOError
 import java.io.IOException
-import java.net.CacheRequest
 import kotlin.text.StringBuilder
 
 class MapSelectionFragment : SupportMapFragment() {
@@ -37,6 +34,8 @@ class MapSelectionFragment : SupportMapFragment() {
         private var locationUpdateState = false
     }
 
+    // This is the fragment with the map.
+
     private lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     private lateinit var locationCallback : LocationCallback
     private lateinit var addressTextView : TextView
@@ -45,6 +44,10 @@ class MapSelectionFragment : SupportMapFragment() {
     private lateinit var locationRequest: LocationRequest
     private lateinit var googleMap: GoogleMap
     private lateinit var lastLocation : Location
+
+    private var locationToSaveLatLng : LatLng? = null
+    private var locationToSaveName : String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +87,17 @@ class MapSelectionFragment : SupportMapFragment() {
         return when (item.itemId){
             R.id.get_location_menu_item ->{
                 checkPermissionAndGetLocation()
-                Log.d(logTag,"Button Pressed")
+                Log.d(logTag,"Current Location Button Pressed")
+                true
+            }
+            R.id.save_location ->{
+                Log.d(logTag,"Save location button pressed")
+                if (locationToSaveLatLng!=null && locationToSaveName!=null){
+                    // TODO implement the call back here
+                } else {
+                    val toast = Toast.makeText(context,"Please place your marker at a valid location",Toast.LENGTH_SHORT)
+                    toast.show()
+                }
                 true
             }
             else -> {
@@ -205,6 +218,46 @@ class MapSelectionFragment : SupportMapFragment() {
 
         val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds,margin)
         googleMap.animateCamera(cameraUpdate)
+        locationToSaveLatLng = myLocationPoint
+        locationToSaveName = getAddress(lastLocation)
+    }
+
+    fun completeSearch(address : String){
+        Log.d(logTag,"completeSearch($address) called")
+        if (address == ""){
+            val toast = Toast.makeText(context,"Please type in an address"  ,Toast.LENGTH_SHORT)
+            toast.show()
+        }
+        else {
+            Log.d(logTag,"Searching for location")
+            val geocoder : Geocoder = Geocoder(context)
+            val addressList = geocoder.getFromLocationName(address,1)
+            if (addressList.isEmpty()){
+                val toast = Toast.makeText(context,"Could not find this location"  ,Toast.LENGTH_SHORT)
+                toast.show()
+            } else {
+                if (!::googleMap.isInitialized || !::lastLocation.isInitialized) {
+                    return
+                }
+                val myAddress = addressList.get(0)
+                val latLng = LatLng(myAddress.latitude,myAddress.longitude)
+                val myMarker = MarkerOptions()
+                    .position(latLng)
+                    .title( address )
+                googleMap.clear()
+                googleMap.addMarker(myMarker)
+
+                val bounds = LatLngBounds.Builder()
+                    .include(latLng)
+                    .build()
+                val margin = resources.getDimensionPixelSize(R.dimen.map_inset_margin)
+
+                val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds,margin)
+                googleMap.animateCamera(cameraUpdate)
+                locationToSaveLatLng = latLng
+                locationToSaveName = address
+            }
+        }
     }
 
 }
