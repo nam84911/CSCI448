@@ -45,8 +45,8 @@ class MapSelectionFragment : SupportMapFragment() {
     private lateinit var googleMap: GoogleMap
     private lateinit var lastLocation : Location
 
-    private var locationToSaveLatLng : LatLng? = null
-    private var locationToSaveName : String? = null
+    var locationToSaveLatLng : LatLng? = null
+    var locationToSaveName : String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,16 +88,6 @@ class MapSelectionFragment : SupportMapFragment() {
             R.id.get_location_menu_item ->{
                 checkPermissionAndGetLocation()
                 Log.d(logTag,"Current Location Button Pressed")
-                true
-            }
-            R.id.save_location ->{
-                Log.d(logTag,"Save location button pressed")
-                if (locationToSaveLatLng!=null && locationToSaveName!=null){
-                    // TODO implement the call back here
-                } else {
-                    val toast = Toast.makeText(context,"Please place your marker at a valid location",Toast.LENGTH_SHORT)
-                    toast.show()
-                }
                 true
             }
             else -> {
@@ -143,7 +133,6 @@ class MapSelectionFragment : SupportMapFragment() {
             locationUpdateState = true
             requireActivity().invalidateOptionsMenu()
         }
-//        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun checkPermissionAndGetLocation(){

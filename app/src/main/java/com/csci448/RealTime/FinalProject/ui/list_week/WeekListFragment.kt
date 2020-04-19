@@ -1,6 +1,5 @@
 package com.csci448.RealTime.FinalProject.ui.list_week
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.csci448.RealTime.FinalProject.R
+import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.data.Week
 import com.csci448.RealTime.FinalProject.util.NetworkConnectionUtil
@@ -25,9 +25,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+
 class WeekListFragment: Fragment() {
     interface Callbacks{
-        fun goToAddScreen()
+        fun goToAddScreen(activity : Activity)
         fun daySelected(day: Day)
         fun goToSignIn()
     }
@@ -109,7 +110,8 @@ class WeekListFragment: Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.add_activity->{
-                callbacks?.goToAddScreen()
+                val newActivity : Activity = Activity()
+                callbacks?.goToAddScreen(newActivity)
                 true
             }
             else-> super.onOptionsItemSelected(item)

@@ -9,28 +9,56 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.android.gms.location.*
 import android.widget.EditText
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
+import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
+import com.csci448.RealTime.FinalProject.util.CurrentUser
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
+
+private val ARG_ACTIVITY_ID = "activity_id"
 
 const val TAG="com.csci448"
 class ActivityDetailFragment : Fragment(){
    interface Callbacks{
        fun showTimeScreen()
        fun goToMap()
+       fun showTimeScreenWake()
    }
+
+    companion object{
+        fun newInstance(activityId : String): ActivityDetailFragment {
+            val args = Bundle().apply{
+                putString(ARG_ACTIVITY_ID,activityId)
+            }
+            return ActivityDetailFragment().apply {
+                arguments = args
+            }
+
+        }
+    }
     private val logTag = "448.ADF"
+
+            // tODO remove line
+    private val activities= mutableListOf<Activity>()
+
 
     private var callbacks:Callbacks?=null
     private lateinit var database: DatabaseReference
 
-    private lateinit var pickTimebutton:Button
+    private lateinit var pickTimebuttonArrive:Button
+    private lateinit var pickTimeWakeButton:Button
     private lateinit var createActivityButton:Button
     private lateinit var activityDetailViewModel:ActivityDetailViewModel
     private lateinit var fusedLocationProviderClient : FusedLocationProviderClient
@@ -38,6 +66,12 @@ class ActivityDetailFragment : Fragment(){
 
     private lateinit var activityName:EditText
     private lateinit var addressButton:Button
+
+    private var selectionDayList : MutableList<RadioButton> = mutableListOf<RadioButton>()
+
+    var addressString : String? = null
+    var addressLatLng : LatLng? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,23 +88,98 @@ class ActivityDetailFragment : Fragment(){
     ): View? {
         Log.d(TAG,"onCreateView is called")
         val view=inflater.inflate(R.layout.activity_detail,container,false)
-        pickTimebutton=view.findViewById(R.id.pick_time)
+        selectionDayList.add(view.findViewById(R.id.monday))
+        selectionDayList.add(view.findViewById(R.id.tuesday))
+        selectionDayList.add(view.findViewById(R.id.wednesday))
+        selectionDayList.add(view.findViewById(R.id.thursday))
+        selectionDayList.add(view.findViewById(R.id.friday))
+        selectionDayList.add(view.findViewById(R.id.saturday))
+        selectionDayList.add(view.findViewById(R.id.sunday))
+        pickTimebuttonArrive=view.findViewById(R.id.pick_time_arrive)
         activityName=view.findViewById(R.id.activity_name)
         addressButton=view.findViewById(R.id.locationAddress_button)
-        pickTimebutton.setOnClickListener{
+        pickTimebuttonArrive.setOnClickListener{
             callbacks?.showTimeScreen()
+            pickTimebuttonArrive.text = (TimePickerFragment.hr.toString()+":"+TimePickerFragment.min)
+        }
+        pickTimeWakeButton = view.findViewById(R.id.pick_time_wake)
+        pickTimeWakeButton.setOnClickListener {
+            callbacks?.showTimeScreenWake()
+            pickTimeWakeButton.text = (TimePickerFragmentWake.hr.toString()+":"+TimePickerFragmentWake.min)
         }
         createActivityButton=view.findViewById(R.id.create_activity)
         createActivityButton.setOnClickListener{
             val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min)
-            activityDetailViewModel.addActivity(activity, Day.FRI)
 
+            for (i in 0.. selectionDayList.size){
+                if (selectionDayList[i].isChecked){
+                    when (i) {
+                        0-> activityDetailViewModel.addActivity(activity, Day.MON)
+                        1-> activityDetailViewModel.addActivity(activity, Day.TUE)
+                        2-> activityDetailViewModel.addActivity(activity, Day.WED)
+                        3-> activityDetailViewModel.addActivity(activity, Day.THU)
+                        4-> activityDetailViewModel.addActivity(activity, Day.FRI)
+                        5-> activityDetailViewModel.addActivity(activity, Day.SAT)
+                        6-> activityDetailViewModel.addActivity(activity, Day.SUN)
+                    }
+                }
+            }
         }
         locationAddressButton = view.findViewById(R.id.locationAddress_button)
         locationAddressButton.setOnClickListener {
             callbacks?.goToMap()
         }
+        if (addressString!=null){
+            locationAddressButton.text = addressString?:"Search Address"
+        }
+        updateUI()
         return view
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(logTag,"onViewCreated() called")
+        Log.d(logTag,arguments!!.getString(ARG_ACTIVITY_ID,"   XXX "))
+//        activityDetailViewModel.li
+        // TODO get the current activity
+        val list=database.child("users")
+        val childEventListener = object: ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                Log.d(logTag,"A child is born")
+                // A new comment has been added, add it to the displayed list
+                var s=""
+                for (i in dataSnapshot.children){
+                    s=s+','+i.getValue().toString()
+                }
+                s=s.removeRange(0,1)
+                Log.d(logTag,s)
+                val(activity,address,hr,min,uuid)=s.split(',')
+//                activities.add(Activity(address=address
+//                    ,min=min.toInt(),
+//                    activity = activity,
+//                    hr=hr.toInt(),uuid=uuid))
+//                updateUI(activities)
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        }
+        list.addChildEventListener(childEventListener)
 
     }
 
@@ -91,12 +200,17 @@ class ActivityDetailFragment : Fragment(){
     }
     override fun onDetach() {
         super.onDetach()
-        Log.d(TAG,"onAttach is called")
+        Log.d(TAG,"onDetatch is called")
         callbacks=null
     }
 
     override fun onStart() {
         super.onStart()
+    }
+
+    fun updateUI(){
+
+
     }
 
 }

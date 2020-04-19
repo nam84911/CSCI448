@@ -50,17 +50,30 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         app:srcCompat="@drawable/logo_xhdpi" />
 
     <Button
-        android:id="@+id/pick_time"
-        android:layout_width="170dp"
+        android:id="@+id/pick_time_arrive"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/login_button"
         android:onClick="showDatePickerDialog"
-        android:text="Select Time"
+        android:text="Select Time to Arrive"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/colorAccent_white"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/pick_time_wake"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/login_button"
+        android:onClick="showDatePickerDialog"
+        android:text="Select Time for Alarm"
+        android:layout_marginTop="10dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/colorAccent_white"
         android:textSize="18sp" />
@@ -94,7 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="horizontal"
-        android:paddingLeft="30dp">
+        android:paddingLeft="10dp">
 
         <RadioButton
             android:id="@+id/monday"
@@ -144,7 +157,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="0dp"
         android:paddingBottom="30dp">
 
         <TextView

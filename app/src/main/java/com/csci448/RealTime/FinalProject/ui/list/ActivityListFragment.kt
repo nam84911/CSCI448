@@ -57,7 +57,7 @@ class ActivityListFragment : Fragment() {
 
     interface Callbacks{
         fun onDaySelected(activity : Activity)
-        fun goToAddScreen()
+        fun goToAddScreen(activity : Activity)
         fun goToSignIn()
     }
 
@@ -67,9 +67,7 @@ class ActivityListFragment : Fragment() {
     private fun updateUI(activities : List<Activity>){
         adapter = ActivityAdapter(activities){activity : Activity
             -> Unit
-            Toast.makeText(context, "Activity Pressed. Should go to filled in activity detail.", Toast.LENGTH_SHORT)
-                .show()
-            // TODO make a callback here to open up an Activity Detail Fragment
+            callbacks?.goToAddScreen(activity)
         }
         dayRecyclerView.adapter = adapter
         dayTextView.setText(day.toString())
@@ -104,7 +102,8 @@ class ActivityListFragment : Fragment() {
             toast.show()
         }
         addActivityButton.setOnClickListener {
-            callbacks?.goToAddScreen()
+            val newActivity : Activity = Activity()
+            callbacks?.goToAddScreen(newActivity)
         }
        updateUI(emptyList())
         activities.clear()
@@ -187,7 +186,8 @@ class ActivityListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.add_activity->{
-                callbacks?.goToAddScreen()
+                val newActivity : Activity = Activity()
+                callbacks?.goToAddScreen(newActivity)
                 true
             }
             else-> super.onOptionsItemSelected(item)

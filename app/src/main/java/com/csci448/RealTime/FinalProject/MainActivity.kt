@@ -6,14 +6,15 @@ import android.util.Log
 import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
+import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
 import com.csci448.RealTime.FinalProject.ui.detail.ActivityDetailFragment
 import com.csci448.RealTime.FinalProject.ui.detail.MapSearchFragment
-import com.csci448.RealTime.FinalProject.ui.detail.MapSelectionFragment
 import com.csci448.RealTime.FinalProject.ui.list.ActivityListFragment
 import com.csci448.RealTime.FinalProject.ui.list_week.WeekListFragment
 import com.csci448.RealTime.FinalProject.ui.login.LoginFragment
+import com.google.android.gms.maps.model.LatLng
 
-class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragment.Callbacks,ActivityDetailFragment.Callbacks,ActivityListFragment.Callbacks {
+class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragment.Callbacks,ActivityDetailFragment.Callbacks,ActivityListFragment.Callbacks, MapSearchFragment.Callbacks {
 
     private val logTag = "448.MainActivity"
 
@@ -27,7 +28,6 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
             Log.d(logTag,"transitioning to login fragment")
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
         }
-
     }
 
     override fun goToAlarm() {
@@ -36,16 +36,20 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).commit()
     }
 
-    override fun goToAddScreen() {
-        val fragment=ActivityDetailFragment()
+    override fun goToAddScreen(activity : Activity) {
+        val fragment=ActivityDetailFragment.newInstance(activity.uuid)
         Log.d(logTag,"transitioning to Activity Detail fragment")
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
-
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment,"ACT_DET").addToBackStack(null).commit()
     }
 
     override fun showTimeScreen() {
         Log.d(logTag,"Opening up the time picker fragment")
         TimePickerFragment().show(supportFragmentManager, "timePicker")
+    }
+
+    override fun showTimeScreenWake() {
+        Log.d(logTag,"Opening up the time picker fragment")
+        TimePickerFragmentWake().show(supportFragmentManager, "timePickerWake")
     }
 
     override fun daySelected(day: Day) {
@@ -68,5 +72,19 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         val fragment = MapSearchFragment()
         Log.d(logTag,"transitioning to Map fragment")
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
+    }
+
+    override fun saveMyLocation(latLng: LatLng, address: String) {
+        Log.d(logTag,"saveMyLocation() called")
+        if (supportFragmentManager.backStackEntryCount > 0){
+            Log.d(logTag,"popping stack correctly")
+            val myCurrentFrag: ActivityDetailFragment = supportFragmentManager.findFragmentByTag("ACT_DET") as ActivityDetailFragment
+            myCurrentFrag.addressString = address
+            myCurrentFrag.addressLatLng = latLng
+            supportFragmentManager.popBackStackImmediate()
+        } else{
+            Log.d(logTag,"using back button incorrectly")
+            super.onBackPressed()
+        }
     }
 }
