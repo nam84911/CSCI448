@@ -1,5 +1,6 @@
 package com.csci448.RealTime.FinalProject.ui.detail
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -8,10 +9,12 @@ import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.ActivityFireDatabase
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.util.CurrentUser
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 
 class ActivityDetailViewModel(): ViewModel() {
-
-    private val activityIdLiveData = MutableLiveData<String>()
 
 
     fun addActivity(activity:Activity,day:Day){
@@ -21,7 +24,6 @@ class ActivityDetailViewModel(): ViewModel() {
             ActivityFireDatabase.writeToDatabse(user,activity,day)
         }
     }
-    fun loadActivity(activityId : String){
-        activityIdLiveData.value = activityId
-    }
+
+
 }

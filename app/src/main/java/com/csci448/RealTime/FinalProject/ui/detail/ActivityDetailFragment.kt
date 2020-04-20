@@ -50,9 +50,6 @@ class ActivityDetailFragment : Fragment(){
     }
     private val logTag = "448.ADF"
 
-            // tODO remove line
-    private val activities= mutableListOf<Activity>()
-
 
     private var callbacks:Callbacks?=null
     private lateinit var database: DatabaseReference
@@ -132,55 +129,19 @@ class ActivityDetailFragment : Fragment(){
         if (addressString!=null){
             locationAddressButton.text = addressString?:"Search Address"
         }
-        updateUI()
         return view
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(logTag,"onViewCreated() called")
-        Log.d(logTag,arguments!!.getString(ARG_ACTIVITY_ID,"   XXX "))
-//        activityDetailViewModel.li
-        // TODO get the current activity
-        val list=database.child("users")
-        val childEventListener = object: ChildEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d(logTag,"A child is born")
-                // A new comment has been added, add it to the displayed list
-                var s=""
-                for (i in dataSnapshot.children){
-                    s=s+','+i.getValue().toString()
-                }
-                s=s.removeRange(0,1)
-                Log.d(logTag,s)
-                val(activity,address,hr,min,uuid)=s.split(',')
-//                activities.add(Activity(address=address
-//                    ,min=min.toInt(),
-//                    activity = activity,
-//                    hr=hr.toInt(),uuid=uuid))
-//                updateUI(activities)
-            }
-
-            override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-        }
-        list.addChildEventListener(childEventListener)
-
+        findMyActivity(Day.MON)
+        findMyActivity(Day.TUE)
+        findMyActivity(Day.WED)
+        findMyActivity(Day.THU)
+        findMyActivity(Day.FRI)
+        findMyActivity(Day.SAT)
+        findMyActivity(Day.SUN)
     }
 
     override fun onAttach(context: Context) {
@@ -191,6 +152,7 @@ class ActivityDetailFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         Log.d(TAG,"onResume() is called")
+        // TODO add TimePicker update here
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -208,9 +170,54 @@ class ActivityDetailFragment : Fragment(){
         super.onStart()
     }
 
-    fun updateUI(){
+    fun updateUI(activity : Activity){
+        addressButton.text = activity.address
+        pickTimebuttonArrive.text = activity.hr.toString()+":"+activity.min
+        activityName.setText(activity.activity)
+    }
 
+    private fun findMyActivity(day : Day){
+        val activities= mutableListOf<Activity>()
+        Log.d(logTag,"onViewCreated() called")
+        val list=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString()).child(day.c)
+        val childEventListener = object: ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
 
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                // A new comment has been added, add it to the displayed list
+                var s=""
+                for (i in dataSnapshot.children){
+                    s=s+';'+i.getValue().toString()
+                }
+                s=s.removeRange(0,1)
+                val(activity,address,hr,min,uuid)=s.split(';')
+
+                activities.add(Activity(address=address
+                    ,min=min.toInt(),
+                    activity = activity,
+                    hr=hr.toInt(),uuid=uuid))
+
+                for (activity in activities){
+                    if (activity.uuid==arguments!!.getString(ARG_ACTIVITY_ID,"NULL")){
+                        updateUI(activity)
+                    }
+                }
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
+        list.addChildEventListener(childEventListener)
     }
 
 }

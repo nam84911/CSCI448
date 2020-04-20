@@ -43,6 +43,7 @@ class ActivityListFragment : Fragment() {
 
     private lateinit var settingsButton : Button
     private lateinit var addActivityButton : AppCompatImageButton
+
     companion object{
         fun newInstance(day : Day):ActivityListFragment{
 //            val args = Bundle().apply{
@@ -131,11 +132,11 @@ class ActivityListFragment : Fragment() {
                 // A new comment has been added, add it to the displayed list
                 var s=""
                 for (i in dataSnapshot.children){
-                    s=s+','+i.getValue().toString()
+                    s=s+';'+i.getValue().toString()
                 }
                 s=s.removeRange(0,1)
                 Log.d(TAG,s)
-                val(activity,address,hr,min,uuid)=s.split(',')
+                val(activity,address,hr,min,uuid)=s.split(';')
                 activities.add(Activity(address=address
                     ,min=min.toInt(),
                     activity = activity,
