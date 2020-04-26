@@ -12,4 +12,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_maps">Map</string>
     <string name="map_save">Save Location</string>
+    <string name="notify_late">You were late! Setting alarm 5 minutes earlier for next time.</string>
+    <string name="notification_channel_id">alarmnotificationid</string>
+    <string name="notification_channel_name">RealTime</string>
+    <string name="notification_channel_desc">Sends notifications with their status</string>
+
 </resources>

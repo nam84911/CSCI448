@@ -1,7 +1,11 @@
 package com.csci448.RealTime.FinalProject.ui.detail
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +21,7 @@ import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
+import com.csci448.RealTime.FinalProject.util.AlarmReciever
 import com.csci448.RealTime.FinalProject.util.CurrentUser
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.ChildEventListener
@@ -25,7 +30,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.util.*
 
 private val ARG_ACTIVITY_ID = "activity_id"
 
@@ -64,6 +68,8 @@ class ActivityDetailFragment : Fragment(){
     private lateinit var activityName:EditText
     private lateinit var addressButton:Button
 
+    private var timePickerOpened = false
+
     private var selectionDayList : MutableList<RadioButton> = mutableListOf<RadioButton>()
 
     var addressString : String? = null
@@ -76,6 +82,12 @@ class ActivityDetailFragment : Fragment(){
         val factory = ActivityDetailViewModelFactory(requireContext())
         activityDetailViewModel= ViewModelProvider(this,factory).get(ActivityDetailViewModel::class.java)
         database = Firebase.database.reference
+
+        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmIntent = Intent(context,AlarmReciever::class.java).let { intent ->
+            PendingIntent.getBroadcast(context,0, intent,0)
+        }
+        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+3*1000,alarmIntent)
     }
 
     override fun onCreateView(
@@ -98,6 +110,7 @@ class ActivityDetailFragment : Fragment(){
         pickTimebuttonArrive.setOnClickListener{
             callbacks?.showTimeScreen()
             pickTimebuttonArrive.text = (TimePickerFragment.hr.toString()+":"+TimePickerFragment.min)
+            timePickerOpened = true
         }
         pickTimeWakeButton = view.findViewById(R.id.pick_time_wake)
         pickTimeWakeButton.setOnClickListener {
@@ -106,9 +119,10 @@ class ActivityDetailFragment : Fragment(){
         }
         createActivityButton=view.findViewById(R.id.create_activity)
         createActivityButton.setOnClickListener{
+            alarmSet()
             val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min)
 
-            for (i in 0.. selectionDayList.size){
+            for (i in 0.. selectionDayList.size-1){
                 if (selectionDayList[i].isChecked){
                     when (i) {
                         0-> activityDetailViewModel.addActivity(activity, Day.MON)
@@ -152,7 +166,9 @@ class ActivityDetailFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         Log.d(TAG,"onResume() is called")
-        // TODO add TimePicker update here
+        if (timePickerOpened){
+            pickTimebuttonArrive.text = TimePickerFragment.hr.toString()+":"+TimePickerFragment.min
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -174,6 +190,8 @@ class ActivityDetailFragment : Fragment(){
         addressButton.text = activity.address
         pickTimebuttonArrive.text = activity.hr.toString()+":"+activity.min
         activityName.setText(activity.activity)
+        alarmSet()
+
     }
 
     private fun findMyActivity(day : Day){
@@ -218,6 +236,20 @@ class ActivityDetailFragment : Fragment(){
             }
         }
         list.addChildEventListener(childEventListener)
+    }
+
+    fun alarmSet(){
+        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val alarmIntent = Intent(context,AlarmReciever::class.java).let { intent ->
+            PendingIntent.getBroadcast(context,0, intent,0)
+        }
+//        val c = Calendar.getInstance()
+//        c.add(Calendar.SECOND,5)
+//        c.set(Calendar.HOUR_OF_DAY,TimePickerFragment.hr)
+//        c.set(Calendar.MINUTE,TimePickerFragment.min)
+//        c.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
+//        if (c.before(Calendar.getInstance())) {c.add(Calendar.DATE,7)}
+        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+1*1000,alarmIntent)
     }
 
 }
