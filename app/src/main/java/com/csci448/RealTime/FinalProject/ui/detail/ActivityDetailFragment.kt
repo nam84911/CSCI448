@@ -23,6 +23,7 @@ import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
 import com.csci448.RealTime.FinalProject.util.AlarmReciever
 import com.csci448.RealTime.FinalProject.util.CurrentUser
+import com.csci448.RealTime.FinalProject.util.LocationReceiver
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -30,6 +31,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 private val ARG_ACTIVITY_ID = "activity_id"
 
@@ -84,11 +86,6 @@ class ActivityDetailFragment : Fragment(){
         activityDetailViewModel= ViewModelProvider(this,factory).get(ActivityDetailViewModel::class.java)
         database = Firebase.database.reference
 
-        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val alarmIntent = Intent(context,AlarmReciever::class.java).let { intent ->
-            PendingIntent.getBroadcast(context,0, intent,0)
-        }
-        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+3*1000,alarmIntent)
     }
 
     override fun onCreateView(
@@ -190,8 +187,7 @@ class ActivityDetailFragment : Fragment(){
         addressButton.text = activity.address
         pickTimebuttonArrive.text = activity.hr.toString()+":"+activity.min
         activityName.setText(activity.activity)
-        alarmSet()
-
+//        alarmSet()
     }
 
     private fun findMyActivity(day : Day){
@@ -243,13 +239,48 @@ class ActivityDetailFragment : Fragment(){
         val alarmIntent = Intent(context,AlarmReciever::class.java).let { intent ->
             PendingIntent.getBroadcast(context,0, intent,0)
         }
-//        val c = Calendar.getInstance()
-//        c.add(Calendar.SECOND,5)
-//        c.set(Calendar.HOUR_OF_DAY,TimePickerFragment.hr)
-//        c.set(Calendar.MINUTE,TimePickerFragment.min)
-//        c.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
-//        if (c.before(Calendar.getInstance())) {c.add(Calendar.DATE,7)}
-        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+1*1000,alarmIntent)
+        val c = Calendar.getInstance()
+        c.set(Calendar.HOUR_OF_DAY,TimePickerFragmentWake.hr)
+        c.set(Calendar.MINUTE,TimePickerFragmentWake.min)
+        for (i in 0.. selectionDayList.size-1){
+            if (selectionDayList[i].isChecked){
+                when (i) {
+                    0-> c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY)
+                    1-> c.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY)
+                    2-> c.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY)
+                    3-> c.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY)
+                    4-> c.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY)
+                    5-> c.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
+                    6-> c.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY)
+                }
+            }
+        }
+        if (c.before(Calendar.getInstance())) {c.add(Calendar.DATE,7)}
+        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,alarmIntent)
+        val locationAlarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val locationFind = Intent(context,LocationReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(context,0, intent,0)
+        }
+        val c2 = Calendar.getInstance()
+        c2.set(Calendar.HOUR_OF_DAY,TimePickerFragment.hr)
+        c2.set(Calendar.MINUTE,TimePickerFragment.min)
+        for (i in 0.. selectionDayList.size-1){
+            if (selectionDayList[i].isChecked){
+                when (i) {
+                    0-> c2.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY)
+                    1-> c2.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY)
+                    2-> c2.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY)
+                    3-> c2.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY)
+                    4-> c2.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY)
+                    5-> c2.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
+                    6-> c2.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY)
+                }
+            }
+        }
+        if (c2.before(Calendar.getInstance())) {c2.add(Calendar.DATE,7)}
+        locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,alarmIntent)
+
+
     }
 
 }
