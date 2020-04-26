@@ -30,9 +30,7 @@ class LoginFragment:Fragment() {
         super.onCreate(savedInstanceState)
         //Initialize auth for firebase
         auth = FirebaseAuth.getInstance()
-        if(CurrentUser.getCurrentUser()!=null){
-            callBacks?.goToAlarm()
-        }
+
     }
     override fun onCreateView(
         inflater: LayoutInflater,
