@@ -31,10 +31,11 @@ private val ARG_ACTIVITY_ID = "activity_id"
 
 const val TAG="com.csci448"
 class ActivityDetailFragment : Fragment(){
-   interface Callbacks{
-       fun showTimeScreen()
+
+    interface Callbacks{
+       fun showTimeScreen(pickTimebuttonArrive:Button)
        fun goToMap()
-       fun showTimeScreenWake()
+       fun showTimeScreenWake(pickTimeWakeButton:Button)
    }
 
     companion object{
@@ -54,7 +55,7 @@ class ActivityDetailFragment : Fragment(){
     private var callbacks:Callbacks?=null
     private lateinit var database: DatabaseReference
 
-    private lateinit var pickTimebuttonArrive:Button
+     private lateinit var pickTimebuttonArrive:Button
     private lateinit var pickTimeWakeButton:Button
     private lateinit var createActivityButton:Button
     private lateinit var activityDetailViewModel:ActivityDetailViewModel
@@ -96,19 +97,17 @@ class ActivityDetailFragment : Fragment(){
         activityName=view.findViewById(R.id.activity_name)
         addressButton=view.findViewById(R.id.locationAddress_button)
         pickTimebuttonArrive.setOnClickListener{
-            callbacks?.showTimeScreen()
-            pickTimebuttonArrive.text = (TimePickerFragment.hr.toString()+":"+TimePickerFragment.min)
+            callbacks?.showTimeScreen(pickTimebuttonArrive)
         }
         pickTimeWakeButton = view.findViewById(R.id.pick_time_wake)
         pickTimeWakeButton.setOnClickListener {
-            callbacks?.showTimeScreenWake()
-            pickTimeWakeButton.text = (TimePickerFragmentWake.hr.toString()+":"+TimePickerFragmentWake.min)
+            callbacks?.showTimeScreenWake(pickTimeWakeButton)
         }
         createActivityButton=view.findViewById(R.id.create_activity)
         createActivityButton.setOnClickListener{
             val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min)
 
-            for (i in 0.. selectionDayList.size){
+            for (i in 0.. selectionDayList.size-1){
                 if (selectionDayList[i].isChecked){
                     when (i) {
                         0-> activityDetailViewModel.addActivity(activity, Day.MON)
@@ -152,7 +151,6 @@ class ActivityDetailFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         Log.d(TAG,"onResume() is called")
-        // TODO add TimePicker update here
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

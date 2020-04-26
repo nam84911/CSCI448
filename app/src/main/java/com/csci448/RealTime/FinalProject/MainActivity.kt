@@ -3,6 +3,7 @@ package com.csci448.RealTime.FinalProject
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
@@ -42,14 +43,15 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment,"ACT_DET").addToBackStack(null).commit()
     }
 
-    override fun showTimeScreen() {
+    override fun showTimeScreen(pickTimebuttonArrive:Button) {
         Log.d(logTag,"Opening up the time picker fragment")
-        TimePickerFragment().show(supportFragmentManager, "timePicker")
+        TimePickerFragment(pickTimebuttonArrive).show(supportFragmentManager, "timePicker")
     }
 
-    override fun showTimeScreenWake() {
+
+    override fun showTimeScreenWake(pickTimeWakeButton:Button) {
         Log.d(logTag,"Opening up the time picker fragment")
-        TimePickerFragmentWake().show(supportFragmentManager, "timePickerWake")
+        TimePickerFragmentWake(pickTimeWakeButton).show(supportFragmentManager, "timePickerWake")
     }
 
     override fun daySelected(day: Day) {

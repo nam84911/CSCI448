@@ -5,11 +5,12 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.View
+import android.widget.Button
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
 import java.util.*
 
-class TimePickerFragmentWake : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+class TimePickerFragmentWake(val pickTimeWakeButton:Button) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     companion object{
          var hr:Int=12
          var min:Int=0
@@ -28,5 +29,6 @@ class TimePickerFragmentWake : DialogFragment(), TimePickerDialog.OnTimeSetListe
         // Do something with the time chosen by the user
         hr=hourOfDay
         min=minute
+        pickTimeWakeButton.text = (hr.toString()+":"+min)
     }
 }
