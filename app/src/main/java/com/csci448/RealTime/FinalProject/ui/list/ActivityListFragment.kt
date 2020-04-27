@@ -116,6 +116,7 @@ class ActivityListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(logTag, "onViewCreated() called")
         val list=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString()).child(day.c)
+        activities.clear()
         val childEventListener = object: ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
             }
@@ -152,7 +153,8 @@ class ActivityListFragment : Fragment() {
                         "long"-> long=i.value.toString().toDouble()
                     }
                 }
-                activities.add(Activity(
+
+                val a=Activity(
                     address=address
                     ,min=min,
                     arr_hr = arr_hr,
@@ -160,8 +162,18 @@ class ActivityListFragment : Fragment() {
                     activity = activity_name,
                     lat=lat,
                     long=long,
-                    hr=hr.toInt(),uuid=uuid))
-                updateUI(activities)
+                    hr=hr.toInt(),uuid=uuid)
+                var k=false
+                for(act in activities){
+                    if(act.uuid==uuid){
+                        k=true
+                        break
+                    }
+                }
+                if(k==false){
+                    activities.add(a)
+                    updateUI(activities)
+                }
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {

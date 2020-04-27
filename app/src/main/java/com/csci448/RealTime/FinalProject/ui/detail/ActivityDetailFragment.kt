@@ -235,8 +235,8 @@ class ActivityDetailFragment : Fragment(){
         pickTimebuttonArrive.text = "Time to arrive: "+activity.hr.toString()+":"+activity.min
         activityName.setText(activity.activity)
         pickTimeWakeButton.text = "Alarm time: " + activity.arr_hr.toString()+":"+activity.arr_min
-        createActivityButton.isEnabled = false
-        createActivityButton.text = "Edit Activity \n(not implemented)"
+        createActivityButton.isEnabled = true
+        createActivityButton.text = "Edit Activity"
     }
 
     private fun findMyActivity(day : Day){
