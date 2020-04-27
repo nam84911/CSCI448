@@ -12,8 +12,8 @@ import java.util.*
 
 class TimePickerFragment(private val pickTimebuttonArrive: Button) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     companion object{
-         var hr:Int=12
-         var min:Int=0
+         var hr:Int=-1
+         var min:Int=-1
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the current time as the default values for the picker

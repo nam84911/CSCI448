@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.csci448.RealTime.FinalProject.R
@@ -45,6 +46,10 @@ class MapSearchFragment() : Fragment(){
         searchButton.setOnClickListener {
             val address : String = searchText.text.toString()
             mapFragment.completeSearch(address)
+        }
+        searchText.setOnEditorActionListener { textView: TextView, i: Int, keyEvent: KeyEvent ->
+            searchButton.performClick()
+            true
         }
         return view
     }

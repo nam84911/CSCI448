@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         TimePickerFragmentWake(pickTimeWakeButton).show(supportFragmentManager, "timePickerWake")
     }
 
+
     override fun daySelected(day: Day) {
         Log.d(logTag,"transitioning to Activity List fragment")
         val fragment = ActivityListFragment.newInstance(day)

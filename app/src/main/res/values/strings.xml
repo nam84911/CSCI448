@@ -16,5 +16,6 @@
     <string name="notification_channel_id">alarmnotificationid</string>
     <string name="notification_channel_name">RealTime</string>
     <string name="notification_channel_desc">Sends notifications with their status</string>
+    <string name="notify_wake">Wake up!</string>
 
 </resources>
