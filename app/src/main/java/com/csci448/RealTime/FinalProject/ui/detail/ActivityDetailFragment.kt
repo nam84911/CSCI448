@@ -8,9 +8,7 @@ import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import com.google.android.gms.location.*
 import android.widget.EditText
@@ -20,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.data.Activity
+import com.csci448.RealTime.FinalProject.data.ActivityFireDatabase
 import com.csci448.RealTime.FinalProject.data.Day
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
@@ -45,6 +44,7 @@ class ActivityDetailFragment : Fragment(){
         fun goToMap()
         fun showTimeScreenWake(pickTimeWakeButton:Button)
         fun daySelected(day: Day)
+        fun returnScreen()
     }
 
     companion object{
@@ -73,7 +73,7 @@ class ActivityDetailFragment : Fragment(){
 
     private lateinit var activityName:EditText
     private lateinit var addressButton:Button
-
+    private lateinit var day_chosen: Day
 
     private var selectionDayList : MutableList<RadioButton> = mutableListOf<RadioButton>()
 
@@ -89,9 +89,8 @@ class ActivityDetailFragment : Fragment(){
         database = Firebase.database.reference
         if(arguments?.getString(ARG_ACTIVITY_ID,"NULL")!=null){
             id=arguments!!.getString(ARG_ACTIVITY_ID,"NULL")
+            setHasOptionsMenu(true)
         }else{id="NULL"}
-
-        Log.d("love",id)
     }
 
     override fun onCreateView(
@@ -165,7 +164,7 @@ class ActivityDetailFragment : Fragment(){
                     val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
                     val alarmManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
                     alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100,pendingIntent)
-                    callbacks?.daySelected(day)
+                    callbacks?.returnScreen()
                 } else {
                     val t = Toast.makeText(context,"Please select a day",Toast.LENGTH_SHORT)
                     t.show()
@@ -290,6 +289,7 @@ class ActivityDetailFragment : Fragment(){
                 for (activity in activities){
                     if (activity.uuid==arguments!!.getString(ARG_ACTIVITY_ID,"NULL")){
                         fillActivityItems(activity)
+                        day_chosen=day
                     }
                 }
             }
@@ -350,5 +350,19 @@ class ActivityDetailFragment : Fragment(){
         if (c2.before(Calendar.getInstance())) {c2.add(Calendar.DATE,7)}
         locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,locationFind)
     }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.detail_menu,menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.delete_activity->{
+                ActivityFireDatabase.remove(CurrentUser.getCurrentUser(),id,day_chosen)
+                callbacks?.returnScreen()
+                true
+            }
+            else-> super.onOptionsItemSelected(item)
+        }
+    }
 }

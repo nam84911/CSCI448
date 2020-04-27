@@ -50,6 +50,11 @@ class DetailActivity() : AppCompatActivity(),ActivityDetailFragment.Callbacks {
         val fragment = ActivityListFragment.newInstance(day)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
     }
+
+    override fun returnScreen() {
+        supportFragmentManager.popBackStackImmediate()
+    }
+
     override fun goToMap() {
         val fragment = MapSearchFragment()
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()

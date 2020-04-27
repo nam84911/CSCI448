@@ -83,6 +83,9 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
     }
 
+    override fun returnScreen() {
+        supportFragmentManager.popBackStackImmediate()
+    }
     override fun saveMyLocation(latLng: LatLng, address: String) {
         Log.d(logTag,"saveMyLocation() called")
         if (supportFragmentManager.backStackEntryCount > 0){
