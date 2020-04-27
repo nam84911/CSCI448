@@ -4,6 +4,7 @@ package com.csci448.RealTime.FinalProject.ui.detail
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -51,6 +52,7 @@ class ActivityDetailFragment : Fragment(){
             val args = Bundle().apply{
                 putString(ARG_ACTIVITY_ID,activityId)
             }
+            Log.d("448.LocationReciever","in activity detail fragment$activityId")
             return ActivityDetailFragment().apply {
                 arguments = args
             }
@@ -129,10 +131,10 @@ class ActivityDetailFragment : Fragment(){
             } else if(TimePickerFragment.hr == -1 || TimePickerFragment.min == -1){
                 val t = Toast.makeText(context,"Please select a time for arrival",Toast.LENGTH_SHORT)
                 t.show()
-            } else if(TimePickerFragment.hr < TimePickerFragmentWake.hr || (TimePickerFragment.hr == TimePickerFragmentWake.hr && TimePickerFragment.min < TimePickerFragmentWake.min)){
+            } /*else if(TimePickerFragment.hr < TimePickerFragmentWake.hr || (TimePickerFragment.hr == TimePickerFragmentWake.hr && TimePickerFragment.min < TimePickerFragmentWake.min)){
                 val t = Toast.makeText(context,"Please set the alarm before arival time",Toast.LENGTH_SHORT)
                 t.show()
-            } else {
+            }*/ else {
                 var day : Day? = null
                 for (i in 0.. selectionDayList.size-1){
                     if (selectionDayList[i].isChecked){
@@ -152,6 +154,14 @@ class ActivityDetailFragment : Fragment(){
                     val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min,arr_hr =  TimePickerFragmentWake.hr, arr_min = TimePickerFragmentWake.min, lat = addressLatLng!!.latitude,long = addressLatLng!!.longitude)
                     activityDetailViewModel.addActivity(activity, day)
                     setAlarms()
+                    val intent:Intent=Intent(requireContext(),LocationReceiver::class.java)
+                    intent.putExtra(LocationReceiver.LONG,activity.long)
+                    intent.putExtra(LocationReceiver.LAT,activity.lat)
+                    intent.putExtra(LocationReceiver.UUID,activity.uuid)
+
+                    val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+                    val alarmManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100,pendingIntent)
                     callbacks?.daySelected(day)
                 } else {
                     val t = Toast.makeText(context,"Please select a day",Toast.LENGTH_SHORT)
@@ -241,6 +251,7 @@ class ActivityDetailFragment : Fragment(){
             }
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 // A new comment has been added, add it to the displayed list
+               Log.d("LocationReciever",dataSnapshot.key)
                 var s=""
                 for (i in dataSnapshot.children){
                     s=s+';'+i.getValue().toString()

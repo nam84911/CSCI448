@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
     }
 
     override fun onDaySelected(activity: Activity) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun goToSignIn(){
