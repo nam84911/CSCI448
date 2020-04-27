@@ -14,6 +14,10 @@ class TimePickerFragment(private val pickTimebuttonArrive: Button) : DialogFragm
     companion object{
          var hr:Int=-1
          var min:Int=-1
+        fun reset(){
+            hr=-1
+            min=-1
+        }
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the current time as the default values for the picker

@@ -14,6 +14,10 @@ class TimePickerFragmentWake(val pickTimeWakeButton:Button) : DialogFragment(), 
     companion object{
          var hr:Int=-1
          var min:Int=-1
+         fun reset(){
+             hr=-1
+             min=-1
+        }
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the current time as the default values for the picker
@@ -27,8 +31,9 @@ class TimePickerFragmentWake(val pickTimeWakeButton:Button) : DialogFragment(), 
 
     override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
         // Do something with the time chosen by the user
-        pickTimeWakeButton.text = (hr.toString()+":"+min)
         hr=hourOfDay
         min=minute
+        pickTimeWakeButton.text = (hr.toString()+":"+min)
+
     }
 }

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.*
 import android.widget.Button
@@ -33,10 +34,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
+import android.text.TextWatcher as TextWatcher1
 
 private val ARG_ACTIVITY_ID = "activity_id"
 
-const val TAG="com.csci448"
+const val TAG="love"
 class ActivityDetailFragment : Fragment(){
 
     interface Callbacks{
@@ -80,7 +82,9 @@ class ActivityDetailFragment : Fragment(){
     var addressString : String? = null
     var addressLatLng : LatLng? = null
     private lateinit var id:String
-
+    private var currentActivity:Activity?=null
+    private var name=""
+    private var found=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"onCreate() is called")
@@ -98,7 +102,7 @@ class ActivityDetailFragment : Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG,"onCreateView is called")
+        Log.d("love","onCreateView is called")
         val view=inflater.inflate(R.layout.activity_detail,container,false)
         selectionDayList = mutableListOf()
         selectionDayList.add(view.findViewById(R.id.monday))
@@ -118,13 +122,19 @@ class ActivityDetailFragment : Fragment(){
         pickTimeWakeButton.setOnClickListener {
             callbacks?.showTimeScreenWake(pickTimeWakeButton)
         }
+        if (TimePickerFragmentWake.hr != -1 && TimePickerFragmentWake.min != -1){
+            pickTimeWakeButton.text="${TimePickerFragmentWake.hr} :${TimePickerFragmentWake.min}"
+        }
+        if (TimePickerFragment.hr != -1 && TimePickerFragment.min != -1){
+            pickTimebuttonArrive.text="${TimePickerFragment.hr} :${TimePickerFragment.min}"
+        }
         createActivityButton=view.findViewById(R.id.create_activity)
         createActivityButton.setOnClickListener{
             // Check viability of all selections
             if (activityName.text.toString() == "" || activityName.text==null){
                 val t = Toast.makeText(context,"Please enter an activity name",Toast.LENGTH_SHORT)
                 t.show()
-            } else if (addressButton.text=="Search address" || addressButton.text==null || addressButton.text=="" || addressLatLng==null){
+            } else if (addressButton.text=="Search address" || addressButton.text==null || addressButton.text==""){
                 val t = Toast.makeText(context,"Please select an address",Toast.LENGTH_SHORT)
                 t.show()
             } else if (TimePickerFragmentWake.hr == -1 || TimePickerFragmentWake.min == -1){
@@ -153,8 +163,13 @@ class ActivityDetailFragment : Fragment(){
                 }
                 if (day!=null){
                     // THIS IS WHERE ACTIVITY IS OFFICIALLY MADE
-                    val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min,arr_hr =  TimePickerFragmentWake.hr, arr_min = TimePickerFragmentWake.min, lat = addressLatLng!!.latitude,long = addressLatLng!!.longitude)
+                    if(currentActivity!=null){
+                        ActivityFireDatabase.remove(CurrentUser.getCurrentUser(),id,day_chosen)
+                    }
+                    val activity= Activity(activity =name,address=addressButton.text.toString(),arr_hr=TimePickerFragment.hr,arr_min=TimePickerFragment.min,hr =  TimePickerFragmentWake.hr, min = TimePickerFragmentWake.min, lat = addressLatLng!!.latitude,long = addressLatLng!!.longitude)
                     activityDetailViewModel.addActivity(activity, day)
+                    TimePickerFragment.reset()
+                    TimePickerFragmentWake.reset()
                     setAlarms()
                     val intent:Intent=Intent(requireContext(),LocationReceiver::class.java)
                     intent.putExtra(LocationReceiver.LONG,activity.long)
@@ -185,6 +200,7 @@ class ActivityDetailFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG,"onViewcreated is called")
         if(id!="NULL"){
             findMyActivity(Day.MON)
             findMyActivity(Day.TUE)
@@ -204,18 +220,6 @@ class ActivityDetailFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         Log.d(TAG,"onResume() is called")
-        if (TimePickerFragment.hr!=-1 && TimePickerFragment.hr!=-1){
-            pickTimebuttonArrive.text = "Time to Arrive: "+TimePickerFragment.hr.toString()+":"+TimePickerFragment.min
-        } else {
-            pickTimebuttonArrive.text = "Select Time to Arrive"
-        }
-        if (TimePickerFragmentWake.hr!=-1 && TimePickerFragmentWake.hr!=-1){
-            pickTimeWakeButton.text = "Alarm time: "+TimePickerFragment.hr.toString()+":"+TimePickerFragment.min
-        } else {
-            pickTimeWakeButton.text = "Select Time for Alarm"
-        }
-
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -233,10 +237,15 @@ class ActivityDetailFragment : Fragment(){
     fun fillActivityItems(activity : Activity){
         addressButton.text = activity.address
         pickTimebuttonArrive.text = "Time to arrive: "+activity.hr.toString()+":"+activity.min
-        activityName.setText(activity.activity)
+        TimePickerFragment.hr=activity.arr_hr
+        TimePickerFragment.min=activity.arr_min
+        activityName.text= Editable.Factory.getInstance().newEditable(activity.activity)
         pickTimeWakeButton.text = "Alarm time: " + activity.arr_hr.toString()+":"+activity.arr_min
+        TimePickerFragmentWake.hr=activity.hr
+        TimePickerFragmentWake.min=activity.min
         createActivityButton.isEnabled = true
         createActivityButton.text = "Edit Activity"
+        addressLatLng=LatLng(activity.lat,activity.long)
     }
 
     private fun findMyActivity(day : Day){
@@ -287,9 +296,12 @@ class ActivityDetailFragment : Fragment(){
                     hr=hr.toInt(),uuid=uuid))
 
                 for (activity in activities){
-                    if (activity.uuid==arguments!!.getString(ARG_ACTIVITY_ID,"NULL")){
+                    if (activity.uuid==arguments!!.getString(ARG_ACTIVITY_ID,"NULL") &&found==false){
                         fillActivityItems(activity)
                         day_chosen=day
+                        currentActivity=activity
+                        found=true
+                        break
                     }
                 }
             }
@@ -353,6 +365,22 @@ class ActivityDetailFragment : Fragment(){
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.detail_menu,menu)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val textChange=object: TextWatcher1 {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                name=s.toString()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        }
+        activityName.addTextChangedListener(textChange)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
