@@ -63,8 +63,6 @@ class MapSelectionFragment : SupportMapFragment() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 Log.d(logTag,"Got a location: ${locationResult.lastLocation}")
-//                locationTextView.text = ("${locationResult.lastLocation.latitude},${locationResult.lastLocation.longitude}")
-//                addressTextView.text = getAddress(locationResult.lastLocation)
                 lastLocation = locationResult.lastLocation
                 updateUI()
             }
@@ -74,6 +72,8 @@ class MapSelectionFragment : SupportMapFragment() {
             googleMap = map
             requireActivity().invalidateOptionsMenu()
         }
+        checkPermissionAndGetLocation()
+
     }
 
 
