@@ -58,17 +58,18 @@ class ActivityListFragment : Fragment() {
 
     interface Callbacks{
         fun onDaySelected(activity : Activity)
-        fun goToAddScreen(activity : Activity)
+        fun goToAddScreen()
         fun goToSignIn()
+        fun goToAlreadyExistedAddScreen(uid:String)
     }
 
     private var callbacks: Callbacks? = null
 
 
     private fun updateUI(activities : List<Activity>){
-        adapter = ActivityAdapter(activities){activity : Activity
+        adapter = ActivityAdapter(activities){activity_id : String
             -> Unit
-            callbacks?.goToAddScreen(activity)
+            callbacks?.goToAlreadyExistedAddScreen(activity_id)
         }
         dayRecyclerView.adapter = adapter
         dayTextView.setText(day.toString())
@@ -104,7 +105,7 @@ class ActivityListFragment : Fragment() {
         }
         addActivityButton.setOnClickListener {
             val newActivity : Activity = Activity()
-            callbacks?.goToAddScreen(newActivity)
+            callbacks?.goToAddScreen()
         }
        updateUI(emptyList())
         activities.clear()
@@ -117,29 +118,48 @@ class ActivityListFragment : Fragment() {
         val list=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString()).child(day.c)
         val childEventListener = object: ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 // A new comment has been added, add it to the displayed list
-                var s=""
+                var activity_name=""
+                var address=""
+                var arr_hr=0
+                var arr_min=0
+                var hr=0
+                var min=0
+                var lat=0.0
+                var long=0.0
+                var uuid=""
+
+
                 for (i in dataSnapshot.children){
-                    s=s+';'+i.getValue().toString()
+                    when(i.key.toString()){
+                        "activity"-> activity_name=i.value.toString()
+                        "address"-> address=i.value.toString()
+                        "arr_hr"-> arr_hr=i.value.toString().toInt()
+                        "arr_min"-> arr_min=i.value.toString().toInt()
+                        "min"-> min=i.value.toString().toInt()
+                        "hr"-> hr=i.value.toString().toInt()
+                        "uuid"-> uuid=i.value.toString()
+                        "lat"-> lat=i.value.toString().toDouble()
+                        "long"-> long=i.value.toString().toDouble()
+                    }
                 }
-                s=s.removeRange(0,1)
-                Log.d(TAG,s)
-                val(activity,address,hr,min,uuid)=s.split(';')
-                activities.add(Activity(address=address
-                    ,min=min.toInt(),
-                    activity = activity,
+                activities.add(Activity(
+                    address=address
+                    ,min=min,
+                    arr_hr = arr_hr,
+                    arr_min = arr_min,
+                    activity = activity_name,
+                    lat=lat,
+                    long=long,
                     hr=hr.toInt(),uuid=uuid))
                 updateUI(activities)
             }
@@ -187,7 +207,7 @@ class ActivityListFragment : Fragment() {
         return when(item.itemId){
             R.id.add_activity->{
                 val newActivity : Activity = Activity()
-                callbacks?.goToAddScreen(newActivity)
+                callbacks?.goToAddScreen()
                 true
             }
             else-> super.onOptionsItemSelected(item)
@@ -208,3 +228,6 @@ class ActivityListFragment : Fragment() {
 
 
 }
+
+
+

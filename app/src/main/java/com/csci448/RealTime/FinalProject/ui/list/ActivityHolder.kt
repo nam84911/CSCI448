@@ -16,9 +16,9 @@ class ActivityHolder (val view: View) : RecyclerView.ViewHolder(view) {
     private lateinit var activity_location : TextView
 
 
-    fun bind(activity: Activity, clickListener: (Activity)->Unit){
+    fun bind(activity: Activity, clickListener: (String)->Unit){
         this.activity = activity
-        itemView.setOnClickListener { clickListener(this.activity) }
+        itemView.setOnClickListener { clickListener(this.activity.uuid) }
 
         activity_name = itemView.findViewById(R.id.activity_name)
         activity_time = itemView.findViewById(R.id.time)

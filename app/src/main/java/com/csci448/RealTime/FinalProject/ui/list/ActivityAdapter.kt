@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.data.Activity
 
-class ActivityAdapter (private val activities: List<Activity>, private val clickListener : (Activity)->Unit ): RecyclerView.Adapter<ActivityHolder>(){
+class ActivityAdapter (private val activities: List<Activity>, private val clickListener : (String)->Unit ): RecyclerView.Adapter<ActivityHolder>(){
     override fun getItemCount(): Int {
         return activities.size
     }

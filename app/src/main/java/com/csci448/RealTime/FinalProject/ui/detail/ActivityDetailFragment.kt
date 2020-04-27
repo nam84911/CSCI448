@@ -69,7 +69,6 @@ class ActivityDetailFragment : Fragment(){
     private lateinit var pickTimeWakeButton:Button
     private lateinit var createActivityButton:Button
     private lateinit var activityDetailViewModel:ActivityDetailViewModel
-    private lateinit var fusedLocationProviderClient : FusedLocationProviderClient
     private lateinit var locationAddressButton : Button
 
     private lateinit var activityName:EditText
@@ -80,7 +79,7 @@ class ActivityDetailFragment : Fragment(){
 
     var addressString : String? = null
     var addressLatLng : LatLng? = null
-
+    private lateinit var id:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +87,11 @@ class ActivityDetailFragment : Fragment(){
         val factory = ActivityDetailViewModelFactory(requireContext())
         activityDetailViewModel= ViewModelProvider(this,factory).get(ActivityDetailViewModel::class.java)
         database = Firebase.database.reference
+        if(arguments?.getString(ARG_ACTIVITY_ID,"NULL")!=null){
+            id=arguments!!.getString(ARG_ACTIVITY_ID,"NULL")
+        }else{id="NULL"}
 
+        Log.d("love",id)
     }
 
     override fun onCreateView(
@@ -131,10 +134,10 @@ class ActivityDetailFragment : Fragment(){
             } else if(TimePickerFragment.hr == -1 || TimePickerFragment.min == -1){
                 val t = Toast.makeText(context,"Please select a time for arrival",Toast.LENGTH_SHORT)
                 t.show()
-            } /*else if(TimePickerFragment.hr < TimePickerFragmentWake.hr || (TimePickerFragment.hr == TimePickerFragmentWake.hr && TimePickerFragment.min < TimePickerFragmentWake.min)){
+            } else if(TimePickerFragment.hr < TimePickerFragmentWake.hr || (TimePickerFragment.hr == TimePickerFragmentWake.hr && TimePickerFragment.min < TimePickerFragmentWake.min)){
                 val t = Toast.makeText(context,"Please set the alarm before arival time",Toast.LENGTH_SHORT)
                 t.show()
-            }*/ else {
+            } else {
                 var day : Day? = null
                 for (i in 0.. selectionDayList.size-1){
                     if (selectionDayList[i].isChecked){
@@ -183,13 +186,15 @@ class ActivityDetailFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        findMyActivity(Day.MON)
-        findMyActivity(Day.TUE)
-        findMyActivity(Day.WED)
-        findMyActivity(Day.THU)
-        findMyActivity(Day.FRI)
-        findMyActivity(Day.SAT)
-        findMyActivity(Day.SUN)
+        if(id!="NULL"){
+            findMyActivity(Day.MON)
+            findMyActivity(Day.TUE)
+            findMyActivity(Day.WED)
+            findMyActivity(Day.THU)
+            findMyActivity(Day.FRI)
+            findMyActivity(Day.SAT)
+            findMyActivity(Day.SUN)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -225,9 +230,6 @@ class ActivityDetailFragment : Fragment(){
         callbacks=null
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
 
     fun fillActivityItems(activity : Activity){
         addressButton.text = activity.address
@@ -251,17 +253,38 @@ class ActivityDetailFragment : Fragment(){
             }
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
                 // A new comment has been added, add it to the displayed list
-               Log.d("LocationReciever",dataSnapshot.key)
-                var s=""
-                for (i in dataSnapshot.children){
-                    s=s+';'+i.getValue().toString()
-                }
-                s=s.removeRange(0,1)
-                val(activity,address,hr,min,uuid)=s.split(';')
+                var activity_name=""
+                var address=""
+                var arr_hr=0
+                var arr_min=0
+                var hr=0
+                var min=0
+                var lat=0.0
+                var long=0.0
+                var uuid=""
 
-                activities.add(Activity(address=address
-                    ,min=min.toInt(),
-                    activity = activity,
+
+                for (i in dataSnapshot.children){
+                    when(i.key.toString()){
+                        "activity"-> activity_name=i.value.toString()
+                        "address"-> address=i.value.toString()
+                        "arr_hr"-> arr_hr=i.value.toString().toInt()
+                        "arr_min"-> arr_min=i.value.toString().toInt()
+                        "min"-> min=i.value.toString().toInt()
+                        "hr"-> hr=i.value.toString().toInt()
+                        "uuid"-> uuid=i.value.toString()
+                        "lat"-> lat=i.value.toString().toDouble()
+                        "long"-> long=i.value.toString().toDouble()
+                    }
+                }
+                activities.add(Activity(
+                    address=address
+                    ,min=min,
+                    arr_hr = arr_hr,
+                    arr_min = arr_min,
+                    activity = activity_name,
+                    lat=lat,
+                    long=long,
                     hr=hr.toInt(),uuid=uuid))
 
                 for (activity in activities){

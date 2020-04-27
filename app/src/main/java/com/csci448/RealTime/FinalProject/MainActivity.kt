@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).commit()
     }
 
-    override fun goToAddScreen(activity : Activity) {
-        val fragment=ActivityDetailFragment.newInstance(activity.uuid)
+    override fun goToAddScreen() {
+        val fragment=ActivityDetailFragment()
         Log.d(logTag,"transitioning to Activity Detail fragment")
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment,"ACT_DET").addToBackStack(null).commit()
     }
@@ -68,6 +68,13 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         val fragment = LoginFragment()
         Log.d(logTag,"transitioning to login fragment")
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
+    }
+
+    override fun goToAlreadyExistedAddScreen(uid: String) {
+        val fragment=ActivityDetailFragment.newInstance(uid)
+        Log.d(logTag,"transitioning to Activity Detail fragment")
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment,"ACT_DET").addToBackStack(null).commit()
+
     }
 
     override fun goToMap() {

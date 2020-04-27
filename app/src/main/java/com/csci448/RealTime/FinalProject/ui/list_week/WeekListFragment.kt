@@ -28,7 +28,7 @@ import com.google.firebase.ktx.Firebase
 
 class WeekListFragment: Fragment() {
     interface Callbacks{
-        fun goToAddScreen(activity : Activity)
+        fun goToAddScreen()
         fun daySelected(day: Day)
         fun goToSignIn()
     }
@@ -110,8 +110,7 @@ class WeekListFragment: Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.add_activity->{
-                val newActivity : Activity = Activity()
-                callbacks?.goToAddScreen(newActivity)
+                callbacks?.goToAddScreen()
                 true
             }
             else-> super.onOptionsItemSelected(item)
