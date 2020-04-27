@@ -200,14 +200,11 @@ class ActivityDetailFragment : Fragment(){
         val list=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString()).child(day.c)
         val childEventListener = object: ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
