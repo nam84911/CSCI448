@@ -3,6 +3,7 @@ package com.csci448.RealTime.FinalProject.ui.detail
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
@@ -36,6 +37,8 @@ import java.util.*
 private val ARG_ACTIVITY_ID = "activity_id"
 
 const val TAG="com.csci448"
+
+
 class ActivityDetailFragment : Fragment(){
 
     interface Callbacks{
@@ -118,7 +121,6 @@ class ActivityDetailFragment : Fragment(){
         createActivityButton.setOnClickListener{
             alarmSet()
             val activity= Activity(activity =activityName.text.toString(),address=addressButton.text.toString(),hr=TimePickerFragment.hr,min=TimePickerFragment.min)
-
             for (i in 0.. selectionDayList.size-1){
                 if (selectionDayList[i].isChecked){
                     when (i) {
@@ -132,6 +134,12 @@ class ActivityDetailFragment : Fragment(){
                     }
                 }
             }
+            val intent:Intent=Intent(requireContext(),LocationReceiver::class.java)
+            intent.putExtra(LocationReceiver.LONG,activity.long)
+            intent.putExtra(LocationReceiver.LAT,activity.lat)
+            val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+            val alarmManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+             alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100,pendingIntent)
         }
         locationAddressButton = view.findViewById(R.id.locationAddress_button)
         locationAddressButton.setOnClickListener {
@@ -179,10 +187,6 @@ class ActivityDetailFragment : Fragment(){
         callbacks=null
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     fun updateUI(activity : Activity){
         addressButton.text = activity.address
         pickTimebuttonArrive.text = activity.hr.toString()+":"+activity.min
@@ -225,7 +229,6 @@ class ActivityDetailFragment : Fragment(){
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
         list.addChildEventListener(childEventListener)
