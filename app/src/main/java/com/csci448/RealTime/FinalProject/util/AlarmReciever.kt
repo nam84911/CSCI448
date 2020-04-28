@@ -27,9 +27,6 @@ class AlarmReciever() : BroadcastReceiver() {
             address = intent.getStringExtra("ADDRESS")
         }
         Log.d(logTag, "OMG, it works!!!")
-        // TODO remove this toast
-        val t = Toast.makeText(context,"HELP",Toast.LENGTH_SHORT)
-        t.show()
         // Get do alarm or do a notification thing
         val v : Vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= 26) {

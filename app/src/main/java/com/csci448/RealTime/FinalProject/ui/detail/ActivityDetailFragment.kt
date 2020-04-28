@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.Editable
 import android.util.Log
 import android.view.*
@@ -367,6 +368,8 @@ class ActivityDetailFragment : Fragment(){
         }
         if (c2.before(Calendar.getInstance())) {c2.add(Calendar.DATE,7)}
         locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,locationFind)
+//        locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+3*1000,locationFind)
+
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

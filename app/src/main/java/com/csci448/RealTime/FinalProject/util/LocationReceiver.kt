@@ -18,6 +18,8 @@ import com.csci448.RealTime.FinalProject.DetailActivity
 import com.csci448.RealTime.FinalProject.R
 import com.csci448.RealTime.FinalProject.ui.detail.ActivityDetailFragment
 import com.google.android.gms.location.LocationServices
+import kotlin.math.pow
+
 class LocationReceiver : BroadcastReceiver() {
     companion object{
         const val LONG="long"
@@ -37,10 +39,18 @@ class LocationReceiver : BroadcastReceiver() {
             ) {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                     // Need to get location of where we are supposed to be at this time.
-                    val long = intent?.getDoubleExtra(LONG, 10.0)
-                    val lat = intent?.getDoubleExtra(LAT, 0.0)
+                    val long = intent?.getDoubleExtra(LONG, -99.0)
+                    val lat = intent?.getDoubleExtra(LAT, -99.0)
                     val uuid=intent?.getStringExtra(UUID)
-                    if(long!=location.longitude || lat!=location.latitude){
+//                    if(long!=location.longitude || lat!=location.latitude){
+                    val distance = ((long!!-location.longitude).pow(2)-(lat!!-location.latitude).pow(2)).pow(.5)
+                    Log.d(logTag,"You were this far away $distance")
+                    Log.d(logTag,"Longitudes: $long, ${location.longitude}")
+                    Log.d(logTag,"Latitudes: $lat, ${location.latitude}")
+                    if (long==-99.0 || lat ==-99.0){
+                        Log.d(logTag,"Incorrect Lat and Long recieved")
+                    }
+                    else if (distance > 0.000274725275*2){
                         val notificationManager = NotificationManagerCompat.from(context)
                         val channelID = context.resources.getString(R.string.notification_channel_id)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -65,12 +75,20 @@ class LocationReceiver : BroadcastReceiver() {
                         val notification = NotificationCompat.Builder(context, channelID)
                             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                             .setContentTitle("Real time")   // title to display
-                            .setContentText("${location.latitude} and ${location.longitude}")    // subtext to display
+//                            .setContentText("${location.latitude} and ${location.longitude}")    // subtext to display
+                            .setContentText("You didn't make it to your location on time. Setting alarm 5 minutes earlier.")
                             .setAutoCancel(true) // when user clicks notification, remove it
                             .setContentIntent(pendingIntent)
                             .build()
                         Log.d(logTag, "Location found 1 $uuid")
                         notificationManager.notify(0, notification)
+
+                        // Set alarm 5 minutes earlier next week
+
+                    } else {
+
+                        // Set alarm for same time next week
+                        Log.d(logTag,"Close enough")
                     }
 
 
