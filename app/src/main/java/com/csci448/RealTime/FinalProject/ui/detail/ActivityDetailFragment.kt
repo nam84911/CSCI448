@@ -95,6 +95,8 @@ class ActivityDetailFragment : Fragment(){
             id=arguments!!.getString(ARG_ACTIVITY_ID,"NULL")
             setHasOptionsMenu(true)
         }else{id="NULL"}
+        TimePickerFragmentWake.reset()
+        TimePickerFragment.reset()
     }
 
     override fun onCreateView(
@@ -123,10 +125,10 @@ class ActivityDetailFragment : Fragment(){
             callbacks?.showTimeScreenWake(pickTimeWakeButton)
         }
         if (TimePickerFragmentWake.hr != -1 && TimePickerFragmentWake.min != -1){
-            pickTimeWakeButton.text="${TimePickerFragmentWake.hr} :${TimePickerFragmentWake.min}"
+            pickTimeWakeButton.text="${format(TimePickerFragmentWake.hr)} :${format(TimePickerFragmentWake.min)}"
         }
         if (TimePickerFragment.hr != -1 && TimePickerFragment.min != -1){
-            pickTimebuttonArrive.text="${TimePickerFragment.hr} :${TimePickerFragment.min}"
+            pickTimebuttonArrive.text="${format(TimePickerFragment.hr)} :${format(TimePickerFragment.min)}"
         }
         createActivityButton=view.findViewById(R.id.create_activity)
         createActivityButton.setOnClickListener{
@@ -165,20 +167,24 @@ class ActivityDetailFragment : Fragment(){
                     // THIS IS WHERE ACTIVITY IS OFFICIALLY MADE
                     if(currentActivity!=null){
                         ActivityFireDatabase.remove(CurrentUser.getCurrentUser(),id,day_chosen)
+                        val intentTodelete:Intent=Intent(requireContext(),LocationReceiver::class.java)
+                        val pendingIntentToDelete:PendingIntent=PendingIntent.getBroadcast(requireActivity(),currentActivity!!.hr+currentActivity!!.min+currentActivity!!.arr_hr,intentTodelete,PendingIntent.FLAG_UPDATE_CURRENT)
+                        val alarmManagerToDelete:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+                        alarmManagerToDelete.cancel(pendingIntentToDelete);
                     }
                     val activity= Activity(activity =name,address=addressButton.text.toString(),arr_hr=TimePickerFragment.hr,arr_min=TimePickerFragment.min,hr =  TimePickerFragmentWake.hr, min = TimePickerFragmentWake.min, lat = addressLatLng!!.latitude,long = addressLatLng!!.longitude)
                     activityDetailViewModel.addActivity(activity, day)
                     TimePickerFragment.reset()
                     TimePickerFragmentWake.reset()
                     setAlarms()
-                    val intent:Intent=Intent(requireContext(),LocationReceiver::class.java)
+                    val intent=Intent(requireContext(),LocationReceiver::class.java)
                     intent.putExtra(LocationReceiver.LONG,activity.long)
                     intent.putExtra(LocationReceiver.LAT,activity.lat)
                     intent.putExtra(LocationReceiver.UUID,activity.uuid)
 
-                    val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+                    val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),activity.hr+activity.min+activity.arr_hr,intent,PendingIntent.FLAG_UPDATE_CURRENT)
                     val alarmManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
-                    alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100,pendingIntent)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100000,pendingIntent)
                     callbacks?.returnScreen()
                 } else {
                     val t = Toast.makeText(context,"Please select a day",Toast.LENGTH_SHORT)
@@ -236,16 +242,16 @@ class ActivityDetailFragment : Fragment(){
 
     fun fillActivityItems(activity : Activity){
         addressButton.text = activity.address
-        pickTimebuttonArrive.text = "Time to arrive: "+activity.hr.toString()+":"+activity.min
+        pickTimebuttonArrive.text = "Time to arrive: "+format(activity.arr_hr)+":"+format(activity.arr_min)
         TimePickerFragment.hr=activity.arr_hr
         TimePickerFragment.min=activity.arr_min
         activityName.text= Editable.Factory.getInstance().newEditable(activity.activity)
-        pickTimeWakeButton.text = "Alarm time: " + activity.arr_hr.toString()+":"+activity.arr_min
+        pickTimeWakeButton.text = "Alarm time: " + format(activity.hr)+":"+format(activity.min)
         TimePickerFragmentWake.hr=activity.hr
         TimePickerFragmentWake.min=activity.min
         createActivityButton.isEnabled = true
         createActivityButton.text = "Edit Activity"
-        addressLatLng=LatLng(activity.lat,activity.long)
+        addressLatLng= LatLng(activity.lat,activity.long)
     }
 
     private fun findMyActivity(day : Day){
@@ -382,11 +388,20 @@ class ActivityDetailFragment : Fragment(){
         }
         activityName.addTextChangedListener(textChange)
     }
-
+    private fun format(i:Int):String{
+        var s=""
+        if(i<10) s="0"+i.toString()
+        else s=i.toString()
+        return s
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.delete_activity->{
                 ActivityFireDatabase.remove(CurrentUser.getCurrentUser(),id,day_chosen)
+                val intentTodelete:Intent=Intent(requireContext(),LocationReceiver::class.java)
+                val pendingIntentToDelete:PendingIntent=PendingIntent.getBroadcast(requireActivity(),currentActivity!!.hr+currentActivity!!.min+currentActivity!!.arr_hr,intentTodelete,PendingIntent.FLAG_UPDATE_CURRENT)
+                val alarmManagerToDelete:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+                alarmManagerToDelete.cancel(pendingIntentToDelete);
                 callbacks?.returnScreen()
                 true
             }

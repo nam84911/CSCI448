@@ -33,7 +33,13 @@ class TimePickerFragmentWake(val pickTimeWakeButton:Button) : DialogFragment(), 
         // Do something with the time chosen by the user
         hr=hourOfDay
         min=minute
-        pickTimeWakeButton.text = (hr.toString()+":"+min)
+        pickTimeWakeButton.text = (format(hr)+":"+format(min))
 
+    }
+    private fun format(i:Int):String{
+        var s=""
+        if(i<10) s="0"+i.toString()
+        else s=i.toString()
+        return s
     }
 }

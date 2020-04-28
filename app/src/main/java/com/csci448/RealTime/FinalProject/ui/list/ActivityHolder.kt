@@ -25,7 +25,13 @@ class ActivityHolder (val view: View) : RecyclerView.ViewHolder(view) {
         activity_location = itemView.findViewById(R.id.address)
 
         activity_name.text=activity.activity
-        activity_time.text="${activity.hr} :${activity.min}"
+        activity_time.text="${format(activity.hr)} :${format(activity.min)}"
         activity_location.text=activity.address
+    }
+    private fun format(i:Int):String{
+        var s=""
+        if(i<10) s="0"+i.toString()
+        else s=i.toString()
+        return s
     }
 }

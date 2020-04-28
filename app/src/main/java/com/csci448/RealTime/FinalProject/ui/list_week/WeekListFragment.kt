@@ -72,6 +72,7 @@ class WeekListFragment: Fragment() {
             Toast.makeText(context, "Settings Button Pressed", Toast.LENGTH_SHORT)
                 .show()
         }
+        weekListViewModel.reset()
         updateUI()
         return view
     }
@@ -80,23 +81,31 @@ class WeekListFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val databasereference=database.child("users").child(CurrentUser.getCurrentUser()?.uid.toString())
         val childEventListener = object: ChildEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+            override fun onCancelled(dataSnapshot: DatabaseError) {
             }
 
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-            }
-
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-            }
-
-            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                // A new comment has been added, add it to the displayed list
-               Log.d("csci448",dataSnapshot.childrenCount.toString())
+            override fun onChildMoved(dataSnapshot: DataSnapshot, p1: String?) {
+                Log.d("love1","onChildMoved ${dataSnapshot.childrenCount.toString()} removed")
                 weekListViewModel.setDay(dataSnapshot.key,dataSnapshot.childrenCount)
                 updateUI()
             }
 
-            override fun onChildRemoved(p0: DataSnapshot) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
+                Log.d("love1","onChildChanged ${dataSnapshot.childrenCount.toString()} removed")
+                weekListViewModel.setDay(dataSnapshot.key,dataSnapshot.childrenCount)
+                updateUI()
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("love1","onChildAdded ${dataSnapshot.childrenCount.toString()} removed")
+                weekListViewModel.setDay(dataSnapshot.key,dataSnapshot.childrenCount)
+                updateUI()
+            }
+
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                Log.d("love1","${dataSnapshot.childrenCount.toString()} onChildRemoved")
+                weekListViewModel.setDay(dataSnapshot.key,dataSnapshot.childrenCount)
+                updateUI()
             }
         }
         databasereference.addChildEventListener(childEventListener)

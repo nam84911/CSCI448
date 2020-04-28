@@ -27,6 +27,11 @@ class WeekListViewModel() : ViewModel(){
         weeks.add(Week(Day.SAT,0))
         weeks.add(Week(Day.SUN,0))
     }
+    fun reset(){
+        for (i in weeks){
+            i.number=0
+        }
+    }
     fun setDay(key:String?,num:Long){
         for (i in weeks){
             if(i.day.c==key) i.number=num
