@@ -17,6 +17,7 @@ class WeekListViewModel() : ViewModel(){
     fun getList():List<Week>{
         return weeks
     }
+
     fun initializeWeeks(){
         weeks= mutableListOf<Week>()
         weeks.add(Week(Day.MON,0))

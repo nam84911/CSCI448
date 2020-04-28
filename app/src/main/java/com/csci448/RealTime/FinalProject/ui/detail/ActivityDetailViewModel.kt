@@ -16,7 +16,13 @@ import com.google.firebase.database.DatabaseReference
 
 class ActivityDetailViewModel(): ViewModel() {
 
-
+    var activity_name=""
+    var address_line=""
+    var hr=""
+    var min=""
+    var arr_hr=""
+    var arr_min=""
+    var selected=0
     fun addActivity(activity:Activity,day:Day){
         //activityRepository.addActivity(Activity())
         val user=CurrentUser.getCurrentUser()

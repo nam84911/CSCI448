@@ -184,7 +184,7 @@ class ActivityDetailFragment : Fragment(){
 
                     val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),activity.hr+activity.min+activity.arr_hr,intent,PendingIntent.FLAG_UPDATE_CURRENT)
                     val alarmManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
-                    alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+100000,pendingIntent)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+10,pendingIntent)
                     callbacks?.returnScreen()
                 } else {
                     val t = Toast.makeText(context,"Please select a day",Toast.LENGTH_SHORT)

@@ -46,12 +46,11 @@ class ActivityListFragment : Fragment() {
 
     companion object{
         fun newInstance(day : Day):ActivityListFragment{
-//            val args = Bundle().apply{
-//
-//            }
+           val args = Bundle().apply{
+                putSerializable(logTag,day)
+           }
             return ActivityListFragment().apply {
-//                arguments = args
-                this.day = day
+                   arguments = args
             }
         }
     }
@@ -81,6 +80,7 @@ class ActivityListFragment : Fragment() {
         Log.d(logTag, "onCreate() called")
         val factory = ActivityListViewModelFactory(requireContext())
         activityViewModel= ViewModelProvider(this,factory).get(ActivityListViewModel::class.java)
+        activityViewModel.day=arguments?.getSerializable(logTag) as Day
         setHasOptionsMenu(true)
         database = Firebase.database.reference
     }
@@ -91,6 +91,9 @@ class ActivityListFragment : Fragment() {
     ): View? {
 
         Log.d(logTag, "onCreateView() called")
+        if(activityViewModel.day!=null){
+            this.day=activityViewModel.day as Day
+        }
         val view=inflater.inflate(R.layout.activity_day,container,false)
         dayRecyclerView = view.findViewById(R.id.day_recycler_view)
         dayRecyclerView.layoutManager = LinearLayoutManager(context)
