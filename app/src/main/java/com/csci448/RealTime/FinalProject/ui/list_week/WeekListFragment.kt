@@ -31,6 +31,7 @@ class WeekListFragment: Fragment() {
         fun goToAddScreen()
         fun daySelected(day: Day)
         fun goToSignIn()
+        fun logout()
     }
     private var callbacks:Callbacks?=null
     private lateinit var weekListViewModel:WeekListViewModel
@@ -119,7 +120,12 @@ class WeekListFragment: Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.add_activity->{
+//                val newActivity : Activity = Activity()
                 callbacks?.goToAddScreen()
+                true
+            }
+            R.id.logout->{
+                callbacks?.logout()
                 true
             }
             else-> super.onOptionsItemSelected(item)

@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.Button
 import com.csci448.RealTime.FinalProject.data.Activity
 import com.csci448.RealTime.FinalProject.data.Day
+import com.csci448.RealTime.FinalProject.ui.ResetPassword
+import com.csci448.RealTime.FinalProject.ui.SignUpFragment
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragment
 import com.csci448.RealTime.FinalProject.ui.TimePickerFragmentWake
 import com.csci448.RealTime.FinalProject.ui.detail.ActivityDetailFragment
@@ -14,16 +16,20 @@ import com.csci448.RealTime.FinalProject.ui.list.ActivityListFragment
 import com.csci448.RealTime.FinalProject.ui.list_week.WeekListFragment
 import com.csci448.RealTime.FinalProject.ui.login.LoginFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 
-class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragment.Callbacks,ActivityDetailFragment.Callbacks,ActivityListFragment.Callbacks, MapSearchFragment.Callbacks {
+class MainActivity : AppCompatActivity(),ResetPassword.Callbacks,LoginFragment.Callbacks,WeekListFragment.Callbacks,ActivityDetailFragment.Callbacks,ActivityListFragment.Callbacks, MapSearchFragment.Callbacks,SignUpFragment.Callbacks {
 
     private val logTag = "448.MainActivity"
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(logTag,"onCreate() called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment_container)
+        auth = FirebaseAuth.getInstance()
         if(currentFragment == null ) {
             val fragment = LoginFragment()
             Log.d(logTag,"transitioning to login fragment")
@@ -35,6 +41,16 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         val fragment = WeekListFragment()
         Log.d(logTag,"transitioning to Week List fragment")
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).commit()
+    }
+
+    override fun goToSignUp() {
+        val fragment=SignUpFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack(null).commit()
+    }
+
+    override fun goToReset() {
+        val frag=ResetPassword()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container,frag).addToBackStack(null).commit()
     }
 
     override fun goToAddScreen() {
@@ -68,6 +84,11 @@ class MainActivity : AppCompatActivity(),LoginFragment.Callbacks,WeekListFragmen
         val fragment = LoginFragment()
         Log.d(logTag,"transitioning to login fragment")
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
+    }
+
+    override fun logout() {
+        auth.signOut()
+        goToSignIn()
     }
 
     override fun goToAlreadyExistedAddScreen(uid: String) {
