@@ -120,6 +120,11 @@ class WeekListFragment: Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.add_activity->{
+//                val newActivity : Activity = Activity()
+                callbacks?.goToAddScreen()
+                true
+            }
+            R.id.logout->{
                 callbacks?.logout()
                 true
             }

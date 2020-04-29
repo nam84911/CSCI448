@@ -369,7 +369,6 @@ class ActivityDetailFragment : Fragment(){
         val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),activity.hr+activity.min+activity.arr_hr,intent,PendingIntent.FLAG_UPDATE_CURRENT)
         val locationManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
         locationManager.set(AlarmManager.RTC_WAKEUP,c2.timeInMillis,pendingIntent)
-
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

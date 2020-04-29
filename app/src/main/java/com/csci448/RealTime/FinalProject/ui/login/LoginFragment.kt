@@ -34,6 +34,8 @@ class LoginFragment:Fragment() {
         super.onCreate(savedInstanceState)
         //Initialize auth for firebase
         auth = FirebaseAuth.getInstance()
+        setHasOptionsMenu(false)
+
     }
 
     override fun onStart() {
