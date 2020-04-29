@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.time.DayOfWeek
 import java.util.*
 import android.text.TextWatcher as TextWatcher1
 
@@ -319,23 +320,30 @@ class ActivityDetailFragment : Fragment(){
         i.putExtra("ADDRESS",activity.address)
         val alarmIntent = PendingIntent.getBroadcast(context,0, i,0)
         val c = Calendar.getInstance()
-        c.set(Calendar.HOUR_OF_DAY,TimePickerFragmentWake.hr)
-        c.set(Calendar.MINUTE,TimePickerFragmentWake.min)
-        for (i in 0.. selectionDayList.size-1){
-            if (selectionDayList[i].isChecked){
-                when (i) {
-                    0-> c.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY)
-                    1-> c.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY)
-                    2-> c.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY)
-                    3-> c.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY)
-                    4-> c.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY)
-                    5-> c.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
-                    6-> c.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY)
+        c.set(Calendar.HOUR_OF_DAY,activity.hr)
+        c.set(Calendar.MINUTE,activity.min)
+        c.set(Calendar.SECOND,0)
+        var correctDay = false
+        while (!correctDay) {
+            for (i in 0..selectionDayList.size - 1) {
+                if (selectionDayList[i].isChecked) {
+                    when (i) {
+                        0 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.MONDAY)correctDay = true
+                        1 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.TUESDAY)correctDay = true
+                        2 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.WEDNESDAY)correctDay = true
+                        3 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.THURSDAY)correctDay = true
+                        4 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY)correctDay = true
+                        5 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY)correctDay = true
+                        6 -> if (c.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)correctDay = true
+                    }
                 }
+            }
+            if (!correctDay){
+                c.add(Calendar.DATE,1)
             }
         }
         if (c.before(Calendar.getInstance())) {c.add(Calendar.DATE,7)}
-        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,alarmIntent)
+        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis - (Calendar.getInstance().timeInMillis-SystemClock.elapsedRealtime()),alarmIntent)
 //        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+3*1000,alarmIntent)
 
 //        val locationAlarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
@@ -343,22 +351,29 @@ class ActivityDetailFragment : Fragment(){
 //            PendingIntent.getBroadcast(context,0, intent,0)
 //        }
         val c2 = Calendar.getInstance()
-        c2.set(Calendar.HOUR_OF_DAY,TimePickerFragment.hr)
-        c2.set(Calendar.MINUTE,TimePickerFragment.min)
-        for (i in 0.. selectionDayList.size-1){
-            if (selectionDayList[i].isChecked){
-                when (i) {
-                    0-> c2.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY)
-                    1-> c2.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY)
-                    2-> c2.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY)
-                    3-> c2.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY)
-                    4-> c2.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY)
-                    5-> c2.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY)
-                    6-> c2.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY)
+        c2.set(Calendar.HOUR_OF_DAY,activity.hr)
+        c2.set(Calendar.MINUTE,activity.min)
+        c2.set(Calendar.SECOND,0)
+        correctDay = false
+        while (!correctDay) {
+            for (i in 0..selectionDayList.size - 1) {
+                if (selectionDayList[i].isChecked) {
+                    when (i) {
+                        0 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.MONDAY)correctDay = true
+                        1 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.TUESDAY)correctDay = true
+                        2 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.WEDNESDAY)correctDay = true
+                        3 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.THURSDAY)correctDay = true
+                        4 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY)correctDay = true
+                        5 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY)correctDay = true
+                        6 -> if (c2.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)correctDay = true
+                    }
                 }
             }
+            if (!correctDay){
+                c2.add(Calendar.DATE,1)
+            }
         }
-        if (c2.before(Calendar.getInstance())) {c2.add(Calendar.DATE,7)}
+        if (c.before(Calendar.getInstance())) {c.add(Calendar.DATE,7)}
 //        locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, c.timeInMillis,locationFind)
 //        locationAlarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+3*1000,locationFind)
         val intent=Intent(requireContext(),LocationReceiver::class.java)
@@ -368,7 +383,7 @@ class ActivityDetailFragment : Fragment(){
 
         val pendingIntent:PendingIntent=PendingIntent.getBroadcast(requireActivity(),activity.hr+activity.min+activity.arr_hr,intent,PendingIntent.FLAG_UPDATE_CURRENT)
         val locationManager:AlarmManager=requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
-        locationManager.set(AlarmManager.RTC_WAKEUP,c2.timeInMillis,pendingIntent)
+        locationManager.set(AlarmManager.RTC_WAKEUP,c2.timeInMillis - (Calendar.getInstance().timeInMillis-SystemClock.elapsedRealtime()),pendingIntent)
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
