@@ -19,18 +19,28 @@ public const val TAG="com.csci448.realtime"
 class LoginFragment:Fragment() {
     interface Callbacks{
         fun goToAlarm()
+        fun goToSignUp()
+        fun goToReset()
     }
     private var callBacks:Callbacks?=null
 
     private lateinit var signIn:Button
+    private lateinit var signUp:Button
     private lateinit var auth: FirebaseAuth
     private lateinit var username:EditText
     private lateinit var password: EditText
+    private lateinit var reset:Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Initialize auth for firebase
         auth = FirebaseAuth.getInstance()
+    }
 
+    override fun onStart() {
+        super.onStart()
+        if(CurrentUser.checkIfUserIsLoggedIn()){
+            callBacks?.goToAlarm()
+        }
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +51,14 @@ class LoginFragment:Fragment() {
         signIn=view.findViewById(R.id.login)
         username=view.findViewById(R.id.username)
         password=view.findViewById(R.id.password)
+        reset=view.findViewById((R.id.forgotPassword_button))
+        reset.setOnClickListener{
+            callBacks?.goToReset()
+        }
+        signUp=view.findViewById(R.id.signUp)
+        signUp.setOnClickListener{
+            callBacks?.goToSignUp()
+        }
         signIn.setOnClickListener{
             val u=username.text.toString()
             val p= password.text.toString()

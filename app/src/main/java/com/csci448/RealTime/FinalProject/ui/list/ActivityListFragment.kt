@@ -59,6 +59,7 @@ class ActivityListFragment : Fragment() {
         fun onDaySelected(activity : Activity)
         fun goToAddScreen()
         fun goToSignIn()
+        fun logout()
         fun goToAlreadyExistedAddScreen(uid:String)
     }
 
@@ -222,7 +223,7 @@ class ActivityListFragment : Fragment() {
         return when(item.itemId){
             R.id.add_activity->{
                 val newActivity : Activity = Activity()
-                callbacks?.goToAddScreen()
+                callbacks?.logout()
                 true
             }
             else-> super.onOptionsItemSelected(item)

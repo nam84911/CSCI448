@@ -10,4 +10,16 @@ object CurrentUser {
         val user:User=User(currentUser?.email,currentUser?.uid)
         return user
     }
+    fun checkIfUserIsLoggedIn():Boolean{
+        val auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser
+        if (user != null) {
+            // User is signed in
+            return true
+        } else {
+            // No user is signed in
+            return false
+        }
+
+    }
 }
