@@ -8,5 +8,6 @@
     <color name="colorAccent_black">#000</color>
     <color name="colorAccent_lightPurple">#D6E6FF</color>
     <color name="colorAccent_lightTeal">#D4FFFF</color>
+    <color name="colorAccent_darkerTeal">#ACF3F3</color>
     <color name="colorAccent_blue">#214E70</color>
 </resources>
